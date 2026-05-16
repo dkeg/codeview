@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-src 'self' data: blob:;">
+  <title>CodeView</title>
+  <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="node_modules/@xterm/xterm/css/xterm.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+      <div id="sidebar-header">
+        <div id="traffic-light-spacer"></div>
+        <div id="sidebar-actions">
+          <button class="icon-btn" id="btn-new" title="New File (⌘N)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 2a.75.75 0 01.75.75v4.5h4.5a.75.75 0 010 1.5h-4.5v4.5a.75.75 0 01-1.5 0v-4.5h-4.5a.75.75 0 010-1.5h4.5v-4.5A.75.75 0 018 2z"/>
+            </svg>
+          </button>
+          <button class="icon-btn" id="btn-open" title="Open File (⌘O)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5L5.75 1H1.75zM1.5 2.75a.25.25 0 01.25-.25H5.5l1.75 2H14.25a.25.25 0 01.25.25v8.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25V2.75z"/>
+            </svg>
+          </button>
+          <button class="icon-btn" id="btn-open-folder" title="Open Folder (⌘⇧O)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5L5.75 1H1.75zM1.5 2.75a.25.25 0 01.25-.25H5.5l1.75 2H14.25a.25.25 0 01.25.25v8.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25V2.75z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Vertical tabs -->
+      <div id="tabs-section">
+        <div id="tabs-list"></div>
+      </div>
+
+      <!-- Multi-folder file trees -->
+      <div id="file-trees-container"></div>
+    </div>
+
+    <!-- Sidebar resize handle -->
+    <div class="resize-handle vertical" id="sidebar-resize-handle"></div>
+
+    <!-- Main content -->
+    <div id="main-content">
+
+      <!-- Toolbar -->
+      <div id="toolbar">
+        <div id="view-mode-buttons">
+          <button class="view-btn" id="btn-view-editor" data-mode="editor" title="Editor Only (⌘1)">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M1 2.5A1.5 1.5 0 012.5 1h11A1.5 1.5 0 0115 2.5v11a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 011 13.5v-11zm1.5 0a.5.5 0 00-.5.5v11a.5.5 0 00.5.5h11a.5.5 0 00.5-.5v-11a.5.5 0 00-.5-.5h-11z"/>
+              <path d="M4 5h8v1H4zm0 3h8v1H4zm0 3h5v1H4z"/>
+            </svg>
+          </button>
+          <button class="view-btn active" id="btn-view-split" data-mode="split" title="Split View (⌘2)">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M1 2.5A1.5 1.5 0 012.5 1h11A1.5 1.5 0 0115 2.5v11a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 011 13.5v-11zm1.5-.5a.5.5 0 00-.5.5v11a.5.5 0 00.5.5h5v-12H2.5zm5.5 12h5.5a.5.5 0 00.5-.5v-11a.5.5 0 00-.5-.5H8v12z"/>
+            </svg>
+          </button>
+          <button class="view-btn" id="btn-view-preview" data-mode="preview" title="Preview Only (⌘3)">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 2C4.13 2 1 5.13 1 8s3.13 6 7 6 7-3.13 7-6-3.13-6-7-6zm0 10.5c-2.485 0-4.5-2.015-4.5-4.5S5.515 3.5 8 3.5 12.5 5.515 12.5 8 10.485 12.5 8 12.5z"/>
+              <path d="M8 5.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"/>
+            </svg>
+          </button>
+        </div>
+        <div id="toolbar-center">
+          <span id="file-name-display"></span>
+          <span id="modified-indicator" style="display:none">•</span>
+        </div>
+        <div id="toolbar-right">
+          <button class="icon-btn toggle-btn" id="btn-sync-scroll" title="Sync Scroll">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.5a5.5 5.5 0 110 11 5.5 5.5 0 010-11zm.75 2.75v3.56l2.47 2.47-1.06 1.06-2.75-2.75A.75.75 0 017.25 9V5.25h1.5z"/>
+            </svg>
+          </button>
+          <button class="icon-btn" id="btn-toggle-terminal" title="Toggle Terminal (⌘`)">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM4.03 5.97a.75.75 0 010 1.06L3.06 8l.97.97a.75.75 0 11-1.06 1.06L1.47 8.53a.75.75 0 010-1.06l1.5-1.5a.75.75 0 011.06 0zm3.44 3.56a.75.75 0 010-1.06l1.5-1.5a.75.75 0 111.06 1.06L9.06 8l.97.97a.75.75 0 11-1.06 1.06l-1.5-1.5zm2.72 1.22H8a.75.75 0 010-1.5h2.19a.75.75 0 010 1.5z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor + Preview panels -->
+      <div id="panels">
+        <div id="editor-panel">
+          <textarea id="editor-textarea"></textarea>
+        </div>
+        <div class="resize-handle vertical" id="panels-resize-handle"></div>
+        <div id="preview-panel">
+          <div id="preview-content"></div>
+          <iframe id="html-preview" sandbox="allow-scripts allow-same-origin" style="display:none; width:100%; height:100%; border:none;"></iframe>
+        </div>
+      </div>
+
+      <!-- Terminal resize handle -->
+      <div class="resize-handle horizontal" id="terminal-resize-handle" style="display:none"></div>
+
+      <!-- Terminal panel -->
+      <div id="terminal-panel" style="display:none">
+        <div id="terminal-titlebar">
+          <div id="terminal-tabs"></div>
+          <div id="terminal-actions">
+            <button class="icon-btn" id="btn-terminal-new" title="New Terminal Session">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 2a.75.75 0 01.75.75v4.5h4.5a.75.75 0 010 1.5h-4.5v4.5a.75.75 0 01-1.5 0v-4.5h-4.5a.75.75 0 010-1.5h4.5v-4.5A.75.75 0 018 2z"/>
+              </svg>
+            </button>
+            <button class="icon-btn" id="btn-terminal-maximize" title="Maximize Terminal">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25V2.75A1.75 1.75 0 0014.25 1H1.75zM1.5 2.75a.25.25 0 01.25-.25h12.5a.25.25 0 01.25.25v10.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25V2.75z"/>
+              </svg>
+            </button>
+            <button class="icon-btn" id="btn-terminal-close" title="Close Terminal (⌘`)">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="terminal-sessions"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Splash screen -->
+  <div id="splash-screen" style="display:none">
+    <div id="splash-inner">
+      <div id="splash-logo">
+        <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+          <rect width="72" height="72" rx="16" fill="url(#splash-grad)"/>
+          <defs>
+            <linearGradient id="splash-grad" x1="0" y1="0" x2="72" y2="72" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#1a1a2e"/>
+              <stop offset="100%" stop-color="#0d0d1a"/>
+            </linearGradient>
+          </defs>
+          <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle"
+                font-family="'SF Mono', 'Menlo', monospace" font-size="26" font-weight="700"
+                fill="url(#splash-text-grad)">&lt;/&gt;</text>
+          <defs>
+            <linearGradient id="splash-text-grad" x1="14" y1="26" x2="58" y2="46" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#5BC8F5"/>
+              <stop offset="100%" stop-color="#A78BFA"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1 id="splash-title">CodeView</h1>
+      <div id="splash-actions">
+        <button class="splash-btn primary" id="splash-open-file">Open File…</button>
+        <button class="splash-btn" id="splash-open-folder">Open Folder…</button>
+        <button class="splash-btn" id="splash-new-file">New File</button>
+        <button class="splash-btn" id="splash-terminal">Terminal</button>
+      </div>
+      <div id="splash-recents">
+        <div id="splash-recents-label">Recent Files</div>
+        <div id="splash-recents-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings modal -->
+  <div id="settings-overlay" style="display:none">
+    <div id="settings-modal">
+      <div id="settings-header">
+        <span>Settings</span>
+        <button class="icon-btn" id="settings-close">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z"/>
+          </svg>
+        </button>
+      </div>
+      <!-- Settings tabs -->
+      <div id="settings-tabs">
+        <button class="settings-tab active" data-tab="editor">Editor</button>
+        <button class="settings-tab" data-tab="terminal">Terminal</button>
+        <button class="settings-tab" data-tab="general">General</button>
+      </div>
+      <div id="settings-body">
+
+        <!-- Editor tab -->
+        <div class="settings-tab-panel active" id="settings-panel-editor">
+          <div class="setting-group">
+            <label class="setting-label">Font Family</label>
+            <div class="setting-control">
+              <select id="setting-font-family">
+                <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                <option value="'Fira Code', monospace">Fira Code</option>
+                <option value="'Cascadia Code', monospace">Cascadia Code</option>
+                <option value="Hack, monospace">Hack</option>
+                <option value="'0xProto Nerd Font', monospace">0xProto Nerd Font</option>
+                <option value="'SF Mono', monospace">SF Mono</option>
+                <option value="Menlo, monospace">Menlo</option>
+                <option value="Monaco, monospace">Monaco</option>
+                <option value="'PT Mono', monospace">PT Mono</option>
+                <option value="'Courier New', monospace">Courier New</option>
+              </select>
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Font Size <span id="font-size-display">14px</span></label>
+            <div class="setting-control">
+              <input type="range" id="setting-font-size" min="10" max="24" step="1" value="14">
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Side Margins <span id="side-margin-display">24px</span></label>
+            <div class="setting-control">
+              <input type="range" id="setting-side-margin" min="8" max="80" step="4" value="24">
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Top &amp; Bottom Margins <span id="tb-margin-display">16px</span></label>
+            <div class="setting-control">
+              <input type="range" id="setting-tb-margin" min="8" max="80" step="4" value="16">
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Line Numbers</label>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="setting-line-numbers" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Sync Scroll</label>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="setting-sync-scroll" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal tab -->
+        <div class="settings-tab-panel" id="settings-panel-terminal">
+          <div class="setting-group">
+            <label class="setting-label">Font Family</label>
+            <div class="setting-control">
+              <select id="setting-term-font-family">
+                <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                <option value="'Fira Code', monospace">Fira Code</option>
+                <option value="'Cascadia Code', monospace">Cascadia Code</option>
+                <option value="Hack, monospace">Hack</option>
+                <option value="'0xProto Nerd Font', monospace">0xProto Nerd Font</option>
+                <option value="'SF Mono', monospace">SF Mono</option>
+                <option value="Menlo, monospace">Menlo</option>
+                <option value="Monaco, monospace">Monaco</option>
+                <option value="'PT Mono', monospace">PT Mono</option>
+                <option value="'Courier New', monospace">Courier New</option>
+              </select>
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Font Size <span id="term-font-size-display">13px</span></label>
+            <div class="setting-control">
+              <input type="range" id="setting-term-font-size" min="10" max="24" step="1" value="13">
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Padding <span id="term-padding-display">8px</span></label>
+            <div class="setting-control">
+              <input type="range" id="setting-term-padding" min="4" max="32" step="2" value="8">
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Line Height <span id="term-line-height-display">1.4</span></label>
+            <div class="setting-control">
+              <input type="range" id="setting-term-line-height" min="10" max="22" step="1" value="14">
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Letter Spacing <span id="term-letter-spacing-display">0px</span></label>
+            <div class="setting-control">
+              <input type="range" id="setting-term-letter-spacing" min="0" max="4" step="1" value="0">
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Cursor Style</label>
+            <div class="setting-control">
+              <select id="setting-term-cursor">
+                <option value="block">Block</option>
+                <option value="underline">Underline</option>
+                <option value="bar">Bar</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- General tab -->
+        <div class="settings-tab-panel" id="settings-panel-general">
+          <div class="setting-group">
+            <label class="setting-label">Theme</label>
+            <div class="setting-control">
+              <select id="setting-theme">
+                <option value="system">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Restore Session</label>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="setting-restore-session" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- New file/folder dialog -->
+  <div id="new-item-overlay" style="display:none">
+    <div id="new-item-modal">
+      <div id="new-item-header">
+        <span id="new-item-title">New File</span>
+        <button class="icon-btn" id="new-item-close">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z"/>
+          </svg>
+        </button>
+      </div>
+      <div id="new-item-body">
+        <input type="text" id="new-item-input" placeholder="filename.md" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+  </div>
+
+  <!-- CodeMirror core -->
+  <script src="node_modules/codemirror/lib/codemirror.js"></script>
+  <!-- CodeMirror modes -->
+  <script src="node_modules/codemirror/mode/markdown/markdown.js"></script>
+  <script src="node_modules/codemirror/mode/javascript/javascript.js"></script>
+  <script src="node_modules/codemirror/mode/xml/xml.js"></script>
+  <script src="node_modules/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+  <script src="node_modules/codemirror/mode/css/css.js"></script>
+  <script src="node_modules/codemirror/mode/python/python.js"></script>
+  <script src="node_modules/codemirror/mode/yaml/yaml.js"></script>
+  <script src="node_modules/codemirror/mode/shell/shell.js"></script>
+  <!-- CodeMirror addons -->
+  <script src="node_modules/codemirror/addon/edit/closebrackets.js"></script>
+  <script src="node_modules/codemirror/addon/edit/matchbrackets.js"></script>
+  <!-- xterm -->
+  <script src="node_modules/@xterm/xterm/lib/xterm.js"></script>
+  <script src="node_modules/@xterm/addon-fit/lib/addon-fit.js"></script>
+  <script src="node_modules/@xterm/addon-web-links/lib/addon-web-links.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
