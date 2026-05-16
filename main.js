@@ -423,6 +423,8 @@ ipcMain.handle('open-external', async (event, url) => {
   shell.openExternal(url)
 })
 
+ipcMain.handle('get-home-dir', async () => app.getPath('home'))
+
 app.whenReady().then(() => {
   buildMenu()
   createWindow()

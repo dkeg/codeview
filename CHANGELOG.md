@@ -4,6 +4,40 @@ All notable changes to CodeView will be documented here.
 
 ---
 
+## [1.1.0] — 2026-05-16
+
+### New Features
+
+- **Kaku theme** — custom dark editor theme (deep navy background, catppuccin-inspired syntax palette) available in both editor and terminal syntax color settings
+- **Terminal syntax color themes** — six ANSI palettes (Apple Dark, Kaku, Dracula, Nord, Solarized Dark, One Dark); only changes syntax colors, terminal background always matches editor background
+- **Sidebar toggle in toolbar** — always-visible sidebar toggle button in the main toolbar; clicking collapses/uncollapses sidebar without needing a keyboard shortcut
+- **Inline terminal + button** — new terminal tab button sits immediately after the last tab and moves as tabs are added
+- **Home directory exposure** — `api.getHomeDir()` added to IPC bridge for safe home path resolution in the renderer
+
+### Bug Fixes
+
+- **HTML preview** — switched from `srcdoc` (null origin, relative resources broken) to `file://` src so local HTML files load with correct origin; preview now also refreshes when switching view modes
+- **Splash screen** — `process.env.HOME` is not available in the context-isolated renderer; replaced with `api.getHomeDir()` which was crashing `updateSplashScreen()` and preventing the splash from ever appearing; z-index raised to 200 so nothing can overlap it
+- **Window dragging** — `-webkit-app-region: drag` added to toolbar and sidebar header; interactive children marked `no-drag`
+- **Traffic lights overlap (sidebar hidden)** — toolbar gains `padding-left: 76px` via `#app.sidebar-hidden` class when sidebar is collapsed
+- **Traffic lights overlap (terminal maximized)** — maximized terminal titlebar gains `padding-left: 76px` so first tab clears traffic lights
+- **Terminal background** — terminal background (canvas + UI chrome) now matches `--editor-bg` exactly in both light and dark modes
+- **Terminal resize handle / border** — resize handle and titlebar background now use `--terminal-bg` (= `--editor-bg`) instead of a separate darker color
+- **Sidebar layout** — folder tree was being pushed to the bottom of the sidebar; fixed with `flex: 0 0 auto / max-height: 40%` on the tabs section and `flex: 1 / min-height: 0` on the folder tree
+- **Active tab bold** — explicit `font-weight: 600` on `.tab.active .tab-name` so the active sidebar tab is visibly bold
+- **Tab font size** — sidebar file tabs increased from 12.5px to 14px
+
+### UI / Polish
+
+- Removed border under main toolbar
+- Removed border under terminal tab bar
+- Removed backdrop blur shadow from toolbar
+- Removed redundant collapse sidebar button from sidebar action bar (toolbar toggle replaces it)
+- Add-file and add-folder sidebar icons are now visually distinct
+- Terminal syntax color select label renamed from "Terminal Theme" to "Syntax Color"
+
+---
+
 ## [1.0.0] — 2026-05-16
 
 ### Initial release

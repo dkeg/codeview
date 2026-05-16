@@ -1,0 +1,52 @@
+/* Kaku — CodeMirror editor theme */
+.cm-s-kaku.CodeMirror {
+  background: #0e0f14;
+  color: #cdd6f4;
+  line-height: 1.6;
+}
+.cm-s-kaku div.CodeMirror-selected { background: rgba(137,180,250,0.18); }
+.cm-s-kaku.CodeMirror-focused div.CodeMirror-selected { background: rgba(137,180,250,0.22); }
+.cm-s-kaku .CodeMirror-line::selection,
+.cm-s-kaku .CodeMirror-line > span::selection,
+.cm-s-kaku .CodeMirror-line > span > span::selection { background: rgba(137,180,250,0.18); }
+.cm-s-kaku .CodeMirror-line::-moz-selection,
+.cm-s-kaku .CodeMirror-line > span::-moz-selection,
+.cm-s-kaku .CodeMirror-line > span > span::-moz-selection { background: rgba(137,180,250,0.18); }
+.cm-s-kaku .CodeMirror-gutters {
+  background: #0e0f14;
+  border-right: 1px solid #1e2030;
+  color: #45475a;
+}
+.cm-s-kaku .CodeMirror-linenumber { color: #45475a; }
+.cm-s-kaku .CodeMirror-cursor { border-left: 2px solid #89b4fa; }
+.cm-s-kaku .CodeMirror-activeline-background { background: rgba(137,180,250,0.05); }
+.cm-s-kaku .CodeMirror-matchingbracket { color: #a6e3a1 !important; outline: 1px solid #a6e3a1; }
+
+/* Syntax */
+.cm-s-kaku .cm-keyword    { color: #cba6f7; }
+.cm-s-kaku .cm-atom       { color: #fab387; }
+.cm-s-kaku .cm-number     { color: #fab387; }
+.cm-s-kaku .cm-def        { color: #89b4fa; }
+.cm-s-kaku .cm-variable   { color: #cdd6f4; }
+.cm-s-kaku .cm-variable-2 { color: #cdd6f4; }
+.cm-s-kaku .cm-variable-3,
+.cm-s-kaku .cm-type       { color: #89dceb; }
+.cm-s-kaku .cm-property   { color: #89b4fa; }
+.cm-s-kaku .cm-operator   { color: #89dceb; }
+.cm-s-kaku .cm-comment    { color: #585b70; font-style: italic; }
+.cm-s-kaku .cm-string     { color: #a6e3a1; }
+.cm-s-kaku .cm-string-2   { color: #94e2d5; }
+.cm-s-kaku .cm-meta       { color: #7f849c; }
+.cm-s-kaku .cm-qualifier  { color: #89dceb; }
+.cm-s-kaku .cm-builtin    { color: #f38ba8; }
+.cm-s-kaku .cm-bracket    { color: #cdd6f4; }
+.cm-s-kaku .cm-tag        { color: #f38ba8; }
+.cm-s-kaku .cm-attribute  { color: #89b4fa; }
+.cm-s-kaku .cm-hr         { color: #45475a; }
+.cm-s-kaku .cm-link       { color: #89b4fa; text-decoration: underline; }
+.cm-s-kaku .cm-error      { color: #f38ba8; background: rgba(243,139,168,0.12); }
+.cm-s-kaku .cm-header     { color: #89b4fa; font-weight: bold; }
+.cm-s-kaku .cm-strong     { color: #cdd6f4; font-weight: bold; }
+.cm-s-kaku .cm-em         { color: #cdd6f4; font-style: italic; }
+.cm-s-kaku .cm-quote      { color: #585b70; }
+.cm-s-kaku .cm-url        { color: #89b4fa; }

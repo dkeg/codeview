@@ -43,9 +43,13 @@ const terminalSessions     = $('terminal-sessions')
 const terminalResizeHandle = $('terminal-resize-handle')
 
 // ─── Init ────────────────────────────────────────────────────────────────────
+let homeDir = ''
+
 async function init() {
+  if (typeof api === 'undefined') return  // loaded inside preview iframe, bail out
   settings = await api.getSettings()
   systemTheme = await api.getTheme()
+  homeDir = await api.getHomeDir()
 
   applyTheme()
   applyEditorSettings()
@@ -66,6 +70,84 @@ async function init() {
   updateSplashScreen()
 }
 
+// ─── Terminal color themes (ANSI palette only — bg/fg stay constant) ──────────
+const TERMINAL_BASE = {
+  background: '#0d0d0f',
+  foreground: '#f2f2f7',
+  cursor: '#0A84FF',
+  cursorAccent: '#000000',
+  selectionBackground: 'rgba(10,132,255,0.3)'
+}
+
+const TERMINAL_THEMES = {
+  'apple-dark': {
+    black: '#1c1c1e', brightBlack: '#636366',
+    red: '#FF453A', brightRed: '#FF6961',
+    green: '#32D74B', brightGreen: '#30DB5B',
+    yellow: '#FFD60A', brightYellow: '#FFD426',
+    blue: '#0A84FF', brightBlue: '#409CFF',
+    magenta: '#BF5AF2', brightMagenta: '#DA8FFF',
+    cyan: '#5AC8FA', brightCyan: '#70D7FF',
+    white: '#EBEBF5', brightWhite: '#FFFFFF'
+  },
+  'kaku': {
+    black: '#181926', brightBlack: '#585b70',
+    red: '#f38ba8', brightRed: '#f38ba8',
+    green: '#a6e3a1', brightGreen: '#a6e3a1',
+    yellow: '#f9e2af', brightYellow: '#f9e2af',
+    blue: '#89b4fa', brightBlue: '#89b4fa',
+    magenta: '#cba6f7', brightMagenta: '#cba6f7',
+    cyan: '#89dceb', brightCyan: '#89dceb',
+    white: '#bac2de', brightWhite: '#cdd6f4'
+  },
+  'dracula': {
+    black: '#21222c', brightBlack: '#6272a4',
+    red: '#ff5555', brightRed: '#ff6e6e',
+    green: '#50fa7b', brightGreen: '#69ff94',
+    yellow: '#f1fa8c', brightYellow: '#ffffa5',
+    blue: '#bd93f9', brightBlue: '#d6acff',
+    magenta: '#ff79c6', brightMagenta: '#ff92df',
+    cyan: '#8be9fd', brightCyan: '#a4ffff',
+    white: '#f8f8f2', brightWhite: '#ffffff'
+  },
+  'nord': {
+    black: '#3b4252', brightBlack: '#4c566a',
+    red: '#bf616a', brightRed: '#bf616a',
+    green: '#a3be8c', brightGreen: '#a3be8c',
+    yellow: '#ebcb8b', brightYellow: '#ebcb8b',
+    blue: '#81a1c1', brightBlue: '#88c0d0',
+    magenta: '#b48ead', brightMagenta: '#b48ead',
+    cyan: '#88c0d0', brightCyan: '#8fbcbb',
+    white: '#e5e9f0', brightWhite: '#eceff4'
+  },
+  'solarized-dark': {
+    black: '#073642', brightBlack: '#586e75',
+    red: '#dc322f', brightRed: '#cb4b16',
+    green: '#859900', brightGreen: '#657b83',
+    yellow: '#b58900', brightYellow: '#b58900',
+    blue: '#268bd2', brightBlue: '#839496',
+    magenta: '#d33682', brightMagenta: '#6c71c4',
+    cyan: '#2aa198', brightCyan: '#93a1a1',
+    white: '#eee8d5', brightWhite: '#fdf6e3'
+  },
+  'one-dark': {
+    black: '#3f4451', brightBlack: '#4f5666',
+    red: '#e06c75', brightRed: '#ff7b86',
+    green: '#98c379', brightGreen: '#b1e18b',
+    yellow: '#e5c07b', brightYellow: '#ffd993',
+    blue: '#61afef', brightBlue: '#67cdff',
+    magenta: '#c678dd', brightMagenta: '#de9dff',
+    cyan: '#56b6c2', brightCyan: '#63d4e0',
+    white: '#abb2bf', brightWhite: '#ffffff'
+  }
+}
+
+function getTerminalTheme() {
+  const ansi = TERMINAL_THEMES[settings.termTheme || 'apple-dark'] || TERMINAL_THEMES['apple-dark']
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--editor-bg').trim() || TERMINAL_BASE.background
+  return { ...TERMINAL_BASE, background: bg, ...ansi }
+}
+
 // ─── Theme ───────────────────────────────────────────────────────────────────
 function applyTheme() {
   let theme = settings.theme || 'system'
@@ -74,9 +156,14 @@ function applyTheme() {
   if (editor) editor.setOption('theme', 'default')
 }
 
-api.on('theme-updated', (newTheme) => {
-  systemTheme = newTheme
-  applyTheme()
+// Register theme listener (inside init after guard, but also safe here)
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof api !== 'undefined') {
+    api.on('theme-updated', (newTheme) => {
+      systemTheme = newTheme
+      applyTheme()
+    })
+  }
 })
 
 // ─── Editor ──────────────────────────────────────────────────────────────────
@@ -154,6 +241,8 @@ function applyEditorSettings() {
 
   if (editor) {
     editor.setOption('lineNumbers', settings.lineNumbers !== false)
+    const editorTheme = settings.editorTheme || 'default'
+    editor.setOption('theme', editorTheme)
     editor.refresh()
   }
 
@@ -165,19 +254,22 @@ function applyTerminalSettings() {
   const pad = (settings.termPadding || 8) + 'px'
   document.documentElement.style.setProperty('--term-padding', pad)
 
-  // Update all active terminal instances
-  terminals.forEach(({ xterm }) => {
+  const ff = settings.termFontFamily || "'SF Mono', monospace"
+  const fs = settings.termFontSize || 13
+  const lh = (settings.termLineHeight || 14) / 10
+  const ls = settings.termLetterSpacing || 0
+  const cursor = settings.termCursorStyle || 'block'
+  const theme = getTerminalTheme()
+
+  terminals.forEach(({ xterm, fitAddon }) => {
     if (!xterm) return
-    const ff = settings.termFontFamily || "'SF Mono', monospace"
-    const fs = settings.termFontSize || 13
-    const lh = (settings.termLineHeight || 14) / 10
-    const ls = settings.termLetterSpacing || 0
-    const cursor = settings.termCursorStyle || 'block'
     xterm.options.fontFamily = ff
     xterm.options.fontSize = fs
     xterm.options.lineHeight = lh
     xterm.options.letterSpacing = ls
     xterm.options.cursorStyle = cursor
+    xterm.options.theme = theme
+    if (fitAddon) fitAddon.fit()
   })
 }
 
@@ -290,8 +382,14 @@ function updatePreview() {
 
   if (tab.type === 'html') {
     previewContent.style.display = 'none'
-    htmlPreview.style.display = 'block'
-    htmlPreview.srcdoc = tab.content
+    htmlPreview.style.display = 'flex'
+    htmlPreview.style.flex = '1'
+    if (tab.filePath) {
+      htmlPreview.src = 'file://' + tab.filePath
+    } else {
+      htmlPreview.removeAttribute('src')
+      htmlPreview.srcdoc = tab.content
+    }
     return
   }
 
@@ -531,8 +629,9 @@ function updateToolbarTitle() {
 
 function updateSplashScreen() {
   const hasTab = tabs.length > 0
-  splashScreen.style.display = hasTab ? 'none' : 'flex'
-  $('main-content').style.visibility = hasTab ? 'visible' : 'hidden'
+  const showSplash = !hasTab && !terminalVisible
+  splashScreen.style.display = showSplash ? 'flex' : 'none'
+  $('main-content').style.visibility = (!showSplash) ? 'visible' : 'hidden'
 
   if (!hasTab) {
     const recents = settings.recentFiles || []
@@ -543,7 +642,7 @@ function updateSplashScreen() {
     } else {
       recents.slice(0, 8).forEach(filePath => {
         const name = filePath.split('/').pop()
-        const dir = filePath.split('/').slice(0, -1).join('/').replace(process.env && process.env.HOME ? process.env.HOME : '', '~')
+        const dir = filePath.split('/').slice(0, -1).join('/').replace(homeDir, '~')
         const item = document.createElement('div')
         item.className = 'recent-item'
         item.innerHTML = `
@@ -565,26 +664,36 @@ function setViewMode(mode) {
     b.classList.toggle('active', b.dataset.mode === mode)
   })
   editor && editor.refresh()
+  updatePreview()
 }
 
 function toggleSidebar() {
   sidebarVisible = !sidebarVisible
   sidebar.classList.toggle('hidden', !sidebarVisible)
+  document.getElementById('app').classList.toggle('sidebar-hidden', !sidebarVisible)
   sidebarResizeHandle.style.display = sidebarVisible ? '' : 'none'
   editor && editor.refresh()
 }
 
 // ─── Terminal ─────────────────────────────────────────────────────────────────
-async function openTerminal(cwd) {
+async function openTerminal(cwd, startMaximized = false) {
   if (!terminalVisible) {
     terminalVisible = true
     terminalPanel.style.display = 'flex'
     terminalResizeHandle.style.display = ''
     $('btn-toggle-terminal').classList.add('active')
+    updateSplashScreen()
   }
 
   if (terminals.size === 0) {
     await createTerminalSession(cwd)
+    if (startMaximized) {
+      terminalMaximized = true
+      terminalPanel.classList.add('maximized')
+      updateMaximizeIcon()
+      const t = terminals.get(activeTerminalId)
+      if (t) requestAnimationFrame(() => t.fitAddon.fit())
+    }
     return
   }
 
@@ -599,9 +708,15 @@ async function createTerminalSession(cwd) {
   const openCwd = cwd || (openFolders.length > 0 ? openFolders[0].path : null)
 
   const sessionEl = document.createElement('div')
-  sessionEl.className = 'term-session'
+  sessionEl.className = 'term-session active'
   sessionEl.id = 'term-session-' + id
   terminalSessions.appendChild(sessionEl)
+
+  // Deactivate any currently active session while we set up
+  terminals.forEach(({ sessionEl: el, tabEl }) => {
+    el.classList.remove('active')
+    tabEl.classList.remove('active')
+  })
 
   const ff = settings.termFontFamily || "'SF Mono', monospace"
   const fs = settings.termFontSize || 13
@@ -616,36 +731,16 @@ async function createTerminalSession(cwd) {
     letterSpacing: ls,
     cursorStyle: cursor,
     cursorBlink: true,
-    theme: {
-      background: '#0d0d0f',
-      foreground: '#f2f2f7',
-      cursor: '#0A84FF',
-      selectionBackground: 'rgba(10, 132, 255, 0.3)',
-      black: '#1c1c1e',
-      brightBlack: '#636366',
-      red: '#FF453A',
-      brightRed: '#FF6961',
-      green: '#32D74B',
-      brightGreen: '#30DB5B',
-      yellow: '#FFD60A',
-      brightYellow: '#FFD426',
-      blue: '#0A84FF',
-      brightBlue: '#409CFF',
-      magenta: '#BF5AF2',
-      brightMagenta: '#DA8FFF',
-      cyan: '#5AC8FA',
-      brightCyan: '#70D7FF',
-      white: '#EBEBF5',
-      brightWhite: '#FFFFFF'
-    },
+    theme: getTerminalTheme(),
     allowTransparency: true
   })
 
-  const fitAddon = new FitAddon()
-  const webLinksAddon = new WebLinksAddon((e, uri) => api.openExternal(uri))
+  const fitAddon = new FitAddon.FitAddon()
+  const webLinksAddon = new WebLinksAddon.WebLinksAddon((e, uri) => api.openExternal(uri))
   xterm.loadAddon(fitAddon)
   xterm.loadAddon(webLinksAddon)
   xterm.open(sessionEl)
+  await new Promise(r => requestAnimationFrame(r))
   fitAddon.fit()
 
   const termId = await api.terminal.create(openCwd)
@@ -672,17 +767,23 @@ async function createTerminalSession(cwd) {
 
   xterm.onResize(({ cols, rows }) => api.terminal.resize(termId, cols, rows))
 
+  const initialTabName = openCwd ? openCwd.split('/').filter(Boolean).pop() : 'shell'
+
   const tabEl = document.createElement('div')
   tabEl.className = 'term-tab'
   tabEl.dataset.id = id
   tabEl.innerHTML = `
-    <span>zsh ${id}</span>
+    <span class="term-tab-label">${initialTabName}</span>
     <span class="term-tab-close">
       <svg width="8" height="8" viewBox="0 0 16 16" fill="currentColor">
         <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z"/>
       </svg>
     </span>
   `
+
+  xterm.onTitleChange(title => {
+    if (title) tabEl.querySelector('.term-tab-label').textContent = title
+  })
   tabEl.addEventListener('click', (e) => {
     if (e.target.closest('.term-tab-close')) return
     switchTerminalSession(id)
@@ -691,7 +792,8 @@ async function createTerminalSession(cwd) {
     e.stopPropagation()
     closeTerminalSession(id)
   })
-  terminalTabs.appendChild(tabEl)
+  const newBtn = document.getElementById('btn-terminal-new')
+  terminalTabs.insertBefore(tabEl, newBtn)
 
   terminals.set(id, { xterm, fitAddon, sessionEl, tabEl, termId })
   switchTerminalSession(id)
@@ -737,7 +839,9 @@ function hideTerminal() {
   terminalPanel.classList.remove('maximized')
   terminalResizeHandle.style.display = 'none'
   $('btn-toggle-terminal').classList.remove('active')
+  updateMaximizeIcon()
   editor && editor.refresh()
+  updateSplashScreen()
 }
 
 function toggleTerminal() {
@@ -752,9 +856,25 @@ function toggleTerminal() {
   }
 }
 
+function updateMaximizeIcon() {
+  const btn = $('btn-terminal-maximize')
+  if (terminalMaximized) {
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M5.75 2.5a.75.75 0 000 1.5h2.19l-5 5H.75a.75.75 0 000 1.5h2.69l5-5v2.19a.75.75 0 001.5 0V2.5h-4.19zm4.5 11a.75.75 0 000-1.5H8.06l5-5h2.19a.75.75 0 000-1.5h-2.69l-5 5V8.06a.75.75 0 00-1.5 0v4.44h4.19z"/>
+    </svg>`
+    btn.title = 'Restore Terminal'
+  } else {
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25V2.75A1.75 1.75 0 0014.25 1H1.75zM1.5 2.75a.25.25 0 01.25-.25h12.5a.25.25 0 01.25.25v10.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25V2.75z"/>
+    </svg>`
+    btn.title = 'Maximize Terminal'
+  }
+}
+
 function toggleTerminalMaximize() {
   terminalMaximized = !terminalMaximized
   terminalPanel.classList.toggle('maximized', terminalMaximized)
+  updateMaximizeIcon()
   if (activeTerminalId !== null) {
     const t = terminals.get(activeTerminalId)
     if (t) requestAnimationFrame(() => t.fitAddon.fit())
@@ -781,6 +901,7 @@ function bindSidebarButtons() {
   $('btn-new').addEventListener('click', newFile)
   $('btn-open').addEventListener('click', promptOpenFile)
   $('btn-open-folder').addEventListener('click', promptOpenFolder)
+$('btn-sidebar-toggle').addEventListener('click', toggleSidebar)
 }
 
 function bindSplashButtons() {
@@ -788,8 +909,7 @@ function bindSplashButtons() {
   $('splash-open-folder').addEventListener('click', promptOpenFolder)
   $('splash-new-file').addEventListener('click', newFile)
   $('splash-terminal').addEventListener('click', () => {
-    updateSplashScreen()
-    openTerminal()
+    openTerminal(null, true)
   })
 }
 
@@ -839,10 +959,13 @@ function openSettings() {
   $('setting-term-letter-spacing').value = settings.termLetterSpacing || 0
   $('term-letter-spacing-display').textContent = (settings.termLetterSpacing || 0) + 'px'
   $('setting-term-cursor').value = settings.termCursorStyle || 'block'
+  $('setting-term-theme').value = settings.termTheme || 'apple-dark'
 
   // General tab
   $('setting-theme').value = settings.theme || 'system'
   $('setting-restore-session').checked = settings.restoreSession !== false
+
+  $('setting-editor-theme').value = settings.editorTheme || 'default'
 }
 
 function bindSettingsModal() {
@@ -894,6 +1017,11 @@ function bindSettingsModal() {
     $('btn-sync-scroll').classList.toggle('active', syncScrollActive)
     saveSettingsDebounced()
   })
+  $('setting-editor-theme').addEventListener('change', (e) => {
+    settings.editorTheme = e.target.value
+    applyEditorSettings()
+    saveSettingsDebounced()
+  })
 
   // Terminal settings
   $('setting-term-font-family').addEventListener('change', (e) => {
@@ -927,6 +1055,11 @@ function bindSettingsModal() {
   })
   $('setting-term-cursor').addEventListener('change', (e) => {
     settings.termCursorStyle = e.target.value
+    applyTerminalSettings()
+    saveSettingsDebounced()
+  })
+  $('setting-term-theme').addEventListener('change', (e) => {
+    settings.termTheme = e.target.value
     applyTerminalSettings()
     saveSettingsDebounced()
   })

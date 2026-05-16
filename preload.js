@@ -28,6 +28,7 @@ contextBridge.exposeInMainWorld('api', {
   showInFinder: (filePath) => ipcRenderer.invoke('show-item-in-finder', filePath),
   setTitle: (title) => ipcRenderer.invoke('set-title', title),
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
+  getHomeDir: () => ipcRenderer.invoke('get-home-dir'),
 
   // Markdown rendering
   renderMarkdown: (content) => marked.parse(content),

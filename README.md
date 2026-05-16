@@ -12,7 +12,7 @@ A native macOS code and markdown editor built with Electron. Designed for develo
 - **HTML preview** — live rendered HTML in a sandboxed iframe
 - **Split view** — editor and preview side by side, or toggle between edit-only and preview-only modes
 - **Synchronized scrolling** — optional linked scrolling between editor and preview in split view
-- **Collapsible sidebar** — vertical tabs and file tree, collapse/expand with button or `Cmd+B`
+- **Collapsible sidebar** — vertical tabs and file tree, collapse/expand with toolbar button or `Cmd+B`
 - **Multi-folder file tree** — open multiple folders as independently collapsible sections (collapsed by default), with remove on hover and persistent state
 - **10+ language modes** — Markdown, JSON, HTML, JavaScript, TypeScript, Python, YAML, Shell scripts, plain text
 - **Resizable panes** — drag to resize the sidebar, editor, terminal, and preview panels
@@ -21,7 +21,8 @@ A native macOS code and markdown editor built with Electron. Designed for develo
 - **System theme** — follows macOS dark/light mode automatically, or set manually
 - **Customizable fonts** — JetBrains Mono, Fira Code, Cascadia Code, Hack, 0xProto, SF Mono, Menlo, Monaco, PT Mono, and more (independent editor and terminal font selection)
 - **Adjustable margins** — configure side and top/bottom editor padding
-- **Terminal settings** — independent font family, font size, padding, line height, letter spacing, cursor style
+- **Terminal settings** — independent font family, font size, padding, line height, letter spacing, cursor style, syntax color theme
+- **Syntax color themes** — six terminal ANSI palettes: Apple Dark, Kaku, Dracula, Nord, Solarized Dark, One Dark (background stays constant; only syntax colors change)
 - **Tabbed settings** — organized into Editor, Terminal, and General tabs (no scrolling)
 - **Clickable links** — hyperlinks in preview open in your default browser
 - **Recent files** — splash screen shows recently opened files
@@ -104,6 +105,7 @@ Access via `Cmd+,` or the app menu. Settings are organized into three tabs:
 - **Line Height** — Terminal line height
 - **Letter Spacing** — Terminal letter spacing
 - **Cursor Style** — Block, underline, or bar
+- **Syntax Color** — Terminal ANSI palette (Apple Dark, Kaku, Dracula, Nord, Solarized Dark, One Dark)
 
 ### General
 - **Theme** — System (auto), Light, or Dark
@@ -128,7 +130,7 @@ Access via `Cmd+,` or the app menu. Settings are organized into three tabs:
 - [Electron](https://www.electronjs.org/) — cross-platform desktop app framework
 - [CodeMirror 5](https://codemirror.net/5/) — syntax-highlighted code editor
 - [xterm.js](https://xtermjs.org/) — terminal emulator
-- [node-pty](https://github.com/nicored/node-pty) — native PTY bindings for Node.js
+- [node-pty](https://github.com/microsoft/node-pty) — native PTY bindings for Node.js
 - [marked](https://marked.js.org/) — fast markdown parser and renderer
 
 ## Project Structure
@@ -138,12 +140,13 @@ codeview/
 ├── main.js          # Electron main process + PTY management
 ├── preload.js       # Context bridge (IPC + terminal)
 ├── renderer.js      # UI logic, CodeMirror, xterm, tabs, file tree
-├── index.html       # App layout + inline script loaders
+├── index.html       # App layout + script loaders
 ├── styles.css       # All styling (light/dark themes, terminal, CodeMirror)
 ├── package.json     # Dependencies and build config
 ├── CHANGELOG.md     # Version history
 └── assets/
-    └── icon-dark.icns  # App icon
+    ├── icon-dark.icns   # App icon
+    └── theme-kaku.css   # Kaku editor theme (CodeMirror)
 ```
 
 ## License
