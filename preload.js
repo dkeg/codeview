@@ -24,6 +24,10 @@ contextBridge.exposeInMainWorld('api', {
   // Theme
   getTheme: () => ipcRenderer.invoke('get-theme'),
 
+  // Git
+  getGitStatus: (dirPath) => ipcRenderer.invoke('get-git-status', dirPath),
+  getGitBranch: (dirPath) => ipcRenderer.invoke('get-git-branch', dirPath),
+
   // Utility
   showInFinder: (filePath) => ipcRenderer.invoke('show-item-in-finder', filePath),
   setTitle: (title) => ipcRenderer.invoke('set-title', title),

@@ -76,6 +76,12 @@
   --icon-btn-hover: rgba(0, 0, 0, 0.08);
   --view-btn-active: rgba(0, 122, 255, 0.12);
 
+  /* Git colors */
+  --git-modified: #E2991F;
+  --git-untracked: #32D74B;
+  --git-added: #32D74B;
+  --git-deleted: #FF453A;
+
   /* Syntax colors — light mode */
   --md-heading:  #0055A8;
   --md-link:     #0068D6;
@@ -401,6 +407,13 @@ select { cursor: pointer; }
 .tree-item.active { background: var(--filetree-active); }
 .tree-item.directory { color: var(--filetree-dir); font-weight: 500; }
 
+/* Git status styles */
+.tree-item.git-modified { color: var(--git-modified); }
+.tree-item.git-modified .tree-item-icon { color: var(--git-modified); opacity: 1; }
+
+.tree-item.git-untracked, .tree-item.git-added { color: var(--git-untracked); }
+.tree-item.git-untracked .tree-item-icon, .tree-item.git-added .tree-item-icon { color: var(--git-untracked); opacity: 1; }
+
 .tree-item-icon { flex-shrink: 0; width: 13px; height: 13px; opacity: 0.7; }
 .tree-item-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
 .tree-children { padding-left: 14px; }
@@ -494,11 +507,26 @@ select { cursor: pointer; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 8px;
   font-size: 12.5px;
   color: var(--toolbar-text);
   overflow: hidden;
 }
+
+#git-branch-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: rgba(128, 128, 128, 0.1);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--toolbar-text);
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+#git-branch-display svg { opacity: 0.6; }
 
 #file-name-display {
   overflow: hidden;
@@ -715,16 +743,21 @@ select { cursor: pointer; }
   max-height: 100%;
 }
 
-#terminal-panel.maximized #terminal-titlebar {
-  padding-left: 76px;
+#terminal-panel.maximized #terminal-sessions {
+  padding-top: 34px;
+}
+
+#terminal-panel.maximized #terminal-sessions .term-session {
+  padding-top: 0;
 }
 
 #terminal-titlebar {
   display: flex;
   align-items: center;
-  height: 34px;
+  height: 38px;
   padding: 0 6px 0 8px;
   background: var(--terminal-bg);
+  border-top: 1px solid var(--terminal-titlebar-border);
   flex-shrink: 0;
   gap: 4px;
 }
@@ -733,40 +766,60 @@ select { cursor: pointer; }
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   overflow-x: auto;
   overflow-y: hidden;
+  height: 100%;
 }
 #terminal-tabs::-webkit-scrollbar { display: none; }
 
 .term-tab {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
+  gap: 6px;
+  padding: 0 12px;
+  height: 28px;
   border-radius: 6px;
   font-size: 12px;
   color: var(--terminal-tab-text);
   cursor: pointer;
   white-space: nowrap;
-  opacity: 0.55;
-  transition: opacity 0.1s, background 0.1s;
+  opacity: 0.6;
+  transition: all 0.15s ease;
   flex-shrink: 0;
+  user-select: none;
 }
-.term-tab:hover { opacity: 0.8; }
-.term-tab.active { opacity: 1; background: var(--terminal-tab-active); color: #0A84FF; }
+.term-tab:hover { opacity: 0.9; background: rgba(128, 128, 128, 0.1); }
+.term-tab.active {
+  opacity: 1;
+  background: rgba(128, 128, 128, 0.15);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.term-tab-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: none;
+}
+.term-tab.active .term-tab-dot {
+  display: block;
+}
 
 .term-tab-close {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
-  opacity: 0.6;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  margin-left: 2px;
 }
 .term-tab:hover .term-tab-close { display: flex; }
-.term-tab-close:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+.term-tab-close:hover { background: rgba(128, 128, 128, 0.2); }
+.term-tab-close svg { opacity: 0.7; }
 
 .term-tab-new {
   display: flex;

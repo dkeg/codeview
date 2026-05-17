@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog, Menu, shell, nativeTheme } = requir
 const fs = require('fs')
 const path = require('path')
 const pty = require('node-pty')
+const { exec } = require('child_process')
 
 let mainWindow = null
 let pendingOpenFile = null
@@ -424,6 +425,44 @@ ipcMain.handle('open-external', async (event, url) => {
 })
 
 ipcMain.handle('get-home-dir', async () => app.getPath('home'))
+
+ipcMain.handle('get-git-status', async (event, dirPath) => {
+  return new Promise((resolve) => {
+    // -u tells git to show untracked files as well
+    exec('git status --porcelain -u', { cwd: dirPath }, (err, stdout) => {
+      if (err) {
+        resolve({ success: false, error: err.message })
+        return
+      }
+
+      const statusMap = {}
+      const lines = stdout.split('\n')
+      
+      lines.forEach(line => {
+        if (!line.trim()) return
+        const code = line.substring(0, 2).trim()
+        const file = line.substring(3).trim()
+        // Handle renamed files (old -> new)
+        const fileName = file.includes(' -> ') ? file.split(' -> ')[1] : file
+        statusMap[fileName] = code
+      })
+
+      resolve({ success: true, status: statusMap })
+    })
+  })
+})
+
+ipcMain.handle('get-git-branch', async (event, dirPath) => {
+  return new Promise((resolve) => {
+    exec('git branch --show-current', { cwd: dirPath }, (err, stdout) => {
+      if (err) {
+        resolve({ success: false, error: err.message })
+        return
+      }
+      resolve({ success: true, branch: stdout.trim() })
+    })
+  })
+})
 
 app.whenReady().then(() => {
   buildMenu()

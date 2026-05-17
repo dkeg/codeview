@@ -4,6 +4,35 @@ All notable changes to CodeView will be documented here.
 
 ---
 
+## [1.2.0] — 2026-05-17
+
+### New Features
+
+- **Git Integration** — visual status indicators in the sidebar (Modified, Untracked, Added) that update in real-time
+- **Git Branch Indicator** — current branch name displayed prominently in the toolbar center
+- **Terminal UI Overhaul** — relocated terminal tabs to the bottom with a modern active state (subtle highlight + color dot indicator)
+- **Apple Silicon Native Support** — updated build scripts to dynamically target the current architecture (arm64/x64), eliminating Rosetta requirements on M-series Macs
+
+### Architecture (The "Great Refactoring")
+
+- **Complete Modularization** — extracted the monolithic `renderer.js` into focused modules:
+    - `terminal.js` (xterm/PTY orchestration)
+    - `file-tree.js` (sidebar/directory logic)
+    - `git.js` (git status/branch IPC logic)
+    - `tabs.js` (tab state/rendering)
+    - `editor-manager.js` (CodeMirror configuration)
+    - `preview.js` (Markdown/HTML/JSON rendering)
+    - `settings.js` (Preferences UI/logic)
+    - `icons.js` (Centralized SVG library)
+
+### Bug Fixes
+
+- **HTML Preview** — fixed relative asset resolution using `<base>` tag injection and enabled instant live updates via `srcdoc`
+- **Splash Screen** — fixed issue where the splash screen was hidden during app initialization; it now shows immediately on launch
+- **Maximized Terminal** — adjusted layout to correctly clear macOS traffic lights when the terminal is in full-panel mode
+
+---
+
 ## [1.1.0] — 2026-05-16
 
 ### New Features

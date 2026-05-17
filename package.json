@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "rebuild": "electron-rebuild -f -w node-pty",
+    "rebuild": "electron-rebuild -f -w node-pty --arch=$(node -e 'console.log(process.arch)')",
     "build": "npm run rebuild && electron-builder --mac"
   },
   "dependencies": {
