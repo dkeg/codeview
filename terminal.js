@@ -313,6 +313,20 @@ window.toggleTerminalMaximize = function() {
   window.updateMaximizeIcon()
   if (window.activeTerminalId !== null) {
     const t = window.terminals.get(window.activeTerminalId)
-    if (t) requestAnimationFrame(() => t.fitAddon.fit())
+    if (t) {
+      requestAnimationFrame(() => t.fitAddon.fit())
+      setTimeout(() => t.fitAddon.fit(), 50)
+    }
   }
+  if (!window.terminalMaximized && window.editor) window.editor.refresh()
 };
+
+// Bind terminal titlebar buttons
+const _termClose = document.getElementById('btn-terminal-close')
+if (_termClose) _termClose.addEventListener('click', () => window.toggleTerminal())
+
+const _termMaximize = document.getElementById('btn-terminal-maximize')
+if (_termMaximize) _termMaximize.addEventListener('click', () => window.toggleTerminalMaximize())
+
+const _termNew = document.getElementById('btn-terminal-new')
+if (_termNew) _termNew.addEventListener('click', () => window.createTerminalSession())

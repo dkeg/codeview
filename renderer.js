@@ -60,13 +60,17 @@ async function init() {
     }
 
     // 3. UI setup
-    if (window.updateSplashScreen) window.updateSplashScreen()
+    const mc = window.$('main-content')
+    if (mc) mc.style.visibility = 'visible'
     if (window.bindSplashButtons) window.bindSplashButtons()
-    
+
     // 4. Data loading
     window.settings = await window.api.getSettings() || {}
     window.systemTheme = await window.api.getTheme() || 'dark'
     window.homeDir = await window.api.getHomeDir() || ''
+
+    // Show splash after settings load so recents are available immediately
+    if (window.updateSplashScreen) window.updateSplashScreen()
 
     // 5. App startup
     window.applyTheme()
@@ -85,19 +89,19 @@ async function init() {
     
     if (window.PreviewManager) window.PreviewManager.bindPreviewLinks()
 
-    // 6. Restore session if enabled
+    // 6. Restore session — lock splash so it stays visible until user interacts
+    window._restoring = true
+    window.splashLocked = true
     if (window.settings.restoreSession !== false && window.restoreSession) {
       await window.restoreSession()
     }
-
-    // 7. Final UI sync (Wait a tick to ensure all async work is done)
-    setTimeout(() => {
-      window.updateSplashScreen()
-    }, 50)
+    window._restoring = false
+    // splashLocked stays true — splash dismisses on first user interaction
     console.log('CodeView: Initialization complete.')
 
     } catch (err) {
     console.error('CodeView: Initialization failed:', err)
+    window.splashLocked = false
     if (window.updateSplashScreen) window.updateSplashScreen()
   }
 }
@@ -113,13 +117,15 @@ window.applyTheme = applyTheme
 
 // ─── File operations ──────────────────────────────────────────────────────────
 async function openFile(filePath, mode) {
+  if (!window._restoring) window.splashLocked = false
   const result = await window.api.readFile(filePath)
   if (!result.success) { alert('Could not open file: ' + result.error); return }
-  
+
   if (window.TabManager) {
     const tab = window.TabManager.createTab(result.filePath, result.content, result.type)
     if (mode === 'preview') window.setViewMode('preview')
     else if (mode === 'split') window.setViewMode('split')
+    else if (!window._restoring) window.setViewMode('editor')
     window.addToRecents(result.filePath)
   }
 }
@@ -177,6 +183,7 @@ function getTypeFromPath(filePath) {
 window.getTypeFromPath = getTypeFromPath
 
 function newFile() {
+  window.splashLocked = false
   if (window.TabManager) window.TabManager.createTab(null, '', 'markdown')
 }
 window.newFile = newFile
@@ -206,22 +213,25 @@ function updateToolbarTitle() {
 }
 window.updateToolbarTitle = updateToolbarTitle
 
-function updateSplashScreen() {
+function updateSplashScreen(forceHide = false) {
+  if (window.splashLocked && !forceHide) return
+
   const tabs = (window.TabManager && window.TabManager.tabs) ? window.TabManager.tabs : []
   const hasTab = tabs.length > 0
-  const terminalVisible = !!window.terminalVisible
-  
-  const showSplash = !hasTab && !terminalVisible
-  
-  console.log(`CodeView: updateSplashScreen [hasTab: ${hasTab}, termVisible: ${terminalVisible}] => showSplash: ${showSplash}`)
+
+  const showSplash = !forceHide && !hasTab
 
   if (window.splashScreen) {
     window.splashScreen.style.display = showSplash ? 'flex' : 'none'
   }
-  
-  const mainContent = window.$('main-content')
-  if (mainContent) {
-    mainContent.style.visibility = (!showSplash) ? 'visible' : 'hidden'
+
+  // Hide sidebar while splash is showing — but only when terminal is not open
+  if (showSplash && !window.terminalVisible && window.sidebarVisible && window.toggleSidebar) {
+    window.toggleSidebar()
+    window._sidebarHiddenBySplash = true
+  } else if (!showSplash && window._sidebarHiddenBySplash && window.toggleSidebar) {
+    window._sidebarHiddenBySplash = false
+    if (!window.sidebarVisible) window.toggleSidebar()
   }
 
   if (!hasTab && window.splashScreen && showSplash) {
@@ -242,7 +252,10 @@ function updateSplashScreen() {
             <span class="recent-item-name">${window.escHtml(name)}</span>
             <span class="recent-item-path">${window.escHtml(dir)}</span>
           `
-          item.addEventListener('click', () => window.openFile(filePath))
+          item.addEventListener('click', () => {
+            window.splashLocked = false
+            window.openFile(filePath)
+          })
           list.appendChild(item)
         })
       }
@@ -313,22 +326,30 @@ window.bindSidebarButtons = bindSidebarButtons
 
 function bindSplashButtons() {
   const sOpen = window.$('splash-open-file')
-  if (sOpen) sOpen.addEventListener('click', window.promptOpenFile)
-  
+  if (sOpen) sOpen.addEventListener('click', () => {
+    window.splashLocked = false
+    window.promptOpenFile()
+  })
+
   const sFolder = window.$('splash-open-folder')
   if (sFolder) {
     sFolder.addEventListener('click', async () => {
+      window.splashLocked = false
       const folderPath = await window.api.showFolderDialog()
       if (folderPath && window.FileTree) window.FileTree.addFolder(folderPath)
     })
   }
-  
+
   const sNew = window.$('splash-new-file')
-  if (sNew) sNew.addEventListener('click', window.newFile)
-  
+  if (sNew) sNew.addEventListener('click', () => {
+    window.splashLocked = false
+    window.newFile()
+  })
+
   const sTerm = window.$('splash-terminal')
   if (sTerm) {
     sTerm.addEventListener('click', () => {
+      window.splashLocked = false
       if (window.openTerminal) window.openTerminal(null, true)
     })
   }

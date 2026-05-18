@@ -47,106 +47,44 @@ window.SettingsManager = {
       })
     })
 
-    window.$('settings-close').addEventListener('click', this.closeSettings)
-    window.settingsOverlay.addEventListener('click', (e) => { if (e.target === window.settingsOverlay) this.closeSettings() })
+    // Add safety checks
+    const settingsClose = window.$('settings-close');
+    if (settingsClose) settingsClose.addEventListener('click', this.closeSettings);
+    
+    if (window.settingsOverlay) {
+        window.settingsOverlay.addEventListener('click', (e) => { if (e.target === window.settingsOverlay) this.closeSettings() });
+    }
 
     // Editor settings
-    window.$('setting-font-family').addEventListener('change', (e) => {
-      window.settings.fontFamily = e.target.value
-      window.applyEditorSettings()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-font-size').addEventListener('input', (e) => {
-      window.settings.fontSize = parseInt(e.target.value, 10)
-      window.$('font-size-display').textContent = window.settings.fontSize + 'px'
-      window.applyEditorSettings()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-side-margin').addEventListener('input', (e) => {
-      window.settings.sideMargin = parseInt(e.target.value, 10)
-      window.$('side-margin-display').textContent = window.settings.sideMargin + 'px'
-      window.applyEditorSettings()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-tb-margin').addEventListener('input', (e) => {
-      window.settings.tbMargin = parseInt(e.target.value, 10)
-      window.$('tb-margin-display').textContent = window.settings.tbMargin + 'px'
-      window.applyEditorSettings()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-line-numbers').addEventListener('change', (e) => {
-      window.settings.lineNumbers = e.target.checked
-      window.applyEditorSettings()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-sync-scroll').addEventListener('change', (e) => {
-      window.settings.syncScroll = e.target.checked
-      window.syncScrollActive = e.target.checked
-      document.getElementById('btn-sync-scroll').classList.toggle('active', window.syncScrollActive)
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-editor-theme').addEventListener('change', (e) => {
-      window.settings.editorTheme = e.target.value
-      window.applyEditorSettings()
-      window.saveSettingsDebounced()
-    })
+    ['setting-font-family', 'setting-font-size', 'setting-side-margin', 'setting-tb-margin', 'setting-line-numbers', 'setting-sync-scroll', 'setting-editor-theme', 'setting-term-font-family', 'setting-term-font-size', 'setting-term-padding', 'setting-term-line-height', 'setting-term-letter-spacing', 'setting-term-cursor', 'setting-term-theme', 'setting-theme', 'setting-restore-session'].forEach(id => {
+      const el = window.$(id);
+      if (el) {
+        const event = (el.tagName === 'INPUT' && (el.type === 'text' || el.type === 'range')) ? 'input' : 'change';
+        el.addEventListener(event, (e) => {
+          if (id === 'setting-font-family') window.settings.fontFamily = e.target.value;
+          else if (id === 'setting-font-size') { window.settings.fontSize = parseInt(e.target.value, 10); window.$('font-size-display').textContent = window.settings.fontSize + 'px'; }
+          else if (id === 'setting-side-margin') { window.settings.sideMargin = parseInt(e.target.value, 10); window.$('side-margin-display').textContent = window.settings.sideMargin + 'px'; }
+          else if (id === 'setting-tb-margin') { window.settings.tbMargin = parseInt(e.target.value, 10); window.$('tb-margin-display').textContent = window.settings.tbMargin + 'px'; }
+          else if (id === 'setting-line-numbers') window.settings.lineNumbers = e.target.checked;
+          else if (id === 'setting-sync-scroll') { window.settings.syncScroll = e.target.checked; window.syncScrollActive = e.target.checked; if(document.getElementById('btn-sync-scroll')) document.getElementById('btn-sync-scroll').classList.toggle('active', window.syncScrollActive); }
+          else if (id === 'setting-editor-theme') window.settings.editorTheme = e.target.value;
+          else if (id === 'setting-term-font-family') window.settings.termFontFamily = e.target.value;
+          else if (id === 'setting-term-font-size') { window.settings.termFontSize = parseInt(e.target.value, 10); window.$('term-font-size-display').textContent = window.settings.termFontSize + 'px'; }
+          else if (id === 'setting-term-padding') { window.settings.termPadding = parseInt(e.target.value, 10); window.$('term-padding-display').textContent = window.settings.termPadding + 'px'; }
+          else if (id === 'setting-term-line-height') { window.settings.termLineHeight = parseInt(e.target.value, 10); window.$('term-line-height-display').textContent = (window.settings.termLineHeight / 10).toFixed(1); }
+          else if (id === 'setting-term-letter-spacing') { window.settings.termLetterSpacing = parseInt(e.target.value, 10); window.$('term-letter-spacing-display').textContent = window.settings.termLetterSpacing + 'px'; }
+          else if (id === 'setting-term-cursor') window.settings.termCursorStyle = e.target.value;
+          else if (id === 'setting-term-theme') window.settings.termTheme = e.target.value;
+          else if (id === 'setting-theme') window.settings.theme = e.target.value;
+          else if (id === 'setting-restore-session') window.settings.restoreSession = e.target.checked;
 
-    // Terminal settings
-    window.$('setting-term-font-family').addEventListener('change', (e) => {
-      window.settings.termFontFamily = e.target.value
-      window.applyTerminalSettings()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-term-font-size').addEventListener('input', (e) => {
-      window.settings.termFontSize = parseInt(e.target.value, 10)
-      window.$('term-font-size-display').textContent = window.settings.termFontSize + 'px'
-      window.applyTerminalSettings()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-term-padding').addEventListener('input', (e) => {
-      window.settings.termPadding = parseInt(e.target.value, 10)
-      window.$('term-padding-display').textContent = window.settings.termPadding + 'px'
-      window.applyTerminalSettings()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-term-line-height').addEventListener('input', (e) => {
-      window.settings.termLineHeight = parseInt(e.target.value, 10)
-      window.$('term-line-height-display').textContent = (window.settings.termLineHeight / 10).toFixed(1)
-      window.applyTerminalSettings()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-term-letter-spacing').addEventListener('input', (e) => {
-      window.settings.termLetterSpacing = parseInt(e.target.value, 10)
-      window.$('term-letter-spacing-display').textContent = window.settings.termLetterSpacing + 'px'
-      window.applyTerminalSettings()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-term-cursor').addEventListener('change', (e) => {
-      window.settings.termCursorStyle = e.target.value
-      window.applyTerminalSettings()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-term-theme').addEventListener('change', (e) => {
-      window.settings.termTheme = e.target.value
-      window.applyTerminalSettings()
-      window.saveSettingsDebounced()
-    })
-
-    // General settings
-    window.$('setting-theme').addEventListener('change', (e) => {
-      window.settings.theme = e.target.value
-      window.applyTheme()
-      window.saveSettingsDebounced()
-    })
-    window.$('setting-restore-session').addEventListener('change', (e) => {
-      window.settings.restoreSession = e.target.checked
-      window.saveSettingsDebounced()
-    })
-
-    // Terminal panel buttons
-    window.$('btn-terminal-new').addEventListener('click', () => window.createTerminalSession())
-    window.$('btn-terminal-maximize').addEventListener('click', window.toggleTerminalMaximize)
-    window.$('btn-terminal-close').addEventListener('click', window.toggleTerminal)
+          if (id.startsWith('setting-term')) window.applyTerminalSettings();
+          else if (id === 'setting-theme') window.applyTheme();
+          else if (id.startsWith('setting-')) window.EditorManager.applyEditorSettings();
+          window.saveSettingsDebounced();
+        });
+      }
+    });
   },
 
   closeSettings() {

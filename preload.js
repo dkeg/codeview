@@ -35,7 +35,14 @@ contextBridge.exposeInMainWorld('api', {
   getHomeDir: () => ipcRenderer.invoke('get-home-dir'),
 
   // Markdown rendering
-  renderMarkdown: (content) => marked.parse(content),
+  renderMarkdown: (content) => {
+    try {
+      return marked.parse(content || '')
+    } catch (e) {
+      console.error('Markdown rendering error:', e)
+      return content
+    }
+  },
 
   // Terminal
   terminal: {

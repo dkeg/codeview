@@ -10,6 +10,7 @@ window.viewMode = 'split';
 window.sidebarVisible = true;
 window.terminalVisible = false;
 window.terminalMaximized = false;
+window.splashLocked = false;
 
 // ─── DOM References ─────────────────────────────────────────────────────────
 window.$ = id => document.getElementById(id);

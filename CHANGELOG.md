@@ -4,6 +4,33 @@ All notable changes to CodeView will be documented here.
 
 ---
 
+## [1.3.0] — 2026-05-18
+
+### Bug Fixes
+
+- **Tab dot colors** — active tab shows blue dot, unsaved changes show red dot, inactive tabs show gray dot; dot hides on hover to reveal close button
+- **Splash screen persistence** — splash now stays visible until the user actively interacts (opens a file, clicks a button, etc.) instead of auto-dismissing after a timeout
+- **Red dot on file open** — opening a file from Finder no longer briefly marks the tab as modified; a `_loading` flag suppresses the spurious CodeMirror `change` event fired during `setValue`
+- **Close last file behavior** — closing the last open tab now correctly shows the splash screen in the editor area; if another tab exists it loads immediately
+- **Preview clears on last tab close** — closing the final tab now clears the preview panel instead of leaving stale content
+- **Splash with terminal open** — splash screen now appears correctly above the editor area even when the terminal panel is open below; terminal remains fully interactive
+- **Sidebar auto-hide on splash** — sidebar hides automatically when the launch splash is shown with no open files and no terminal; it restores when a file is opened
+- **Sidebar stays with terminal open** — when the terminal is visible, the sidebar does not auto-hide when the last file is closed
+- **Recent files on first launch** — the recent files list now populates correctly on the initial splash screen (was blank due to settings loading after splash render)
+- **HTML preview via blob URL** — HTML file preview now works reliably using blob URLs, bypassing Chromium's cross-origin restrictions for `file://` paths in iframes
+- **Files always open in editor mode** — opening a file from Finder or the splash screen now defaults to editor view instead of inheriting the previous split/preview state
+- **Terminal un-maximize text overflow** — restoring the terminal from maximized now correctly fits the terminal content; added a secondary `setTimeout` fit pass after `requestAnimationFrame` to handle the layout reflow timing
+- **Settings crash fix** — removed stale element IDs (`setting-minimap`, `btn-terminal-new`, `btn-terminal-close`) from the settings binding loop that caused a `TypeError: Cannot set properties of null` when opening Settings
+
+### Architecture
+
+- **Splash inside editor panel** — moved `#splash-screen` from body-level `position:fixed` into `#panels` as `position:absolute` so it does not overlap the terminal region
+- **`splashLocked` flag** — global flag in `globals.js` that keeps the splash visible until the first meaningful user interaction, replacing the removed 400ms auto-dismiss timer
+- **`_loading` flag in EditorManager** — suppresses the CodeMirror `change` event during programmatic `setValue` calls to prevent false modified state on tab load
+- **`_restoring` flag in renderer** — distinguishes session-restore file opens from user-initiated opens so view mode and splash state are not altered during startup
+
+---
+
 ## [1.2.1] — 2026-05-17
 
 ### New Features

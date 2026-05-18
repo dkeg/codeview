@@ -17,7 +17,7 @@ window.TabManager = {
     }
     const id = this.nextTabId++
     const name = filePath ? filePath.split('/').pop() : 'Untitled'
-    const tab = { id, filePath, name, content: content || '', type: type || 'markdown', modified: !filePath }
+    const tab = { id, filePath, name, content: content || '', type: type || 'markdown', modified: false }
     this.tabs.push(tab)
     this.switchTab(id)
     return tab
@@ -55,6 +55,7 @@ window.TabManager = {
         if (window.editor) window.editor.setValue('')
         document.getElementById('file-name-display').textContent = ''
         document.getElementById('modified-indicator').style.display = 'none'
+        window.updatePreview()
       }
     }
 
@@ -72,12 +73,16 @@ window.TabManager = {
     window.tabsList.innerHTML = ''
     this.tabs.forEach(tab => {
       const el = document.createElement('div')
-      el.className = 'tab' + (tab.id === this.activeTabId ? ' active' : '') + (tab.modified ? ' modified' : '')
+      const isActive = tab.id === this.activeTabId
+      el.className = 'tab' + (isActive ? ' active' : '')
       el.dataset.id = tab.id
+      
+      const dotClass = tab.modified ? 'dot-modified' : isActive ? 'dot-active' : 'dot-inactive'
+
       el.innerHTML = `
         <span class="tab-icon">${window.Icons.iconForType(tab.type)}</span>
         <span class="tab-name">${window.escHtml(tab.name)}</span>
-        <span class="tab-modified"></span>
+        <span class="tab-status-dot ${dotClass}"></span>
         <button class="tab-close" title="Close">
           <svg width="9" height="9" viewBox="0 0 16 16" fill="currentColor">
             <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z"/>
@@ -86,6 +91,7 @@ window.TabManager = {
       `
       el.addEventListener('click', (e) => {
         if (e.target.closest('.tab-close')) return
+        window.splashLocked = false
         this.switchTab(tab.id)
       })
       el.querySelector('.tab-close').addEventListener('click', (e) => {

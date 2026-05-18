@@ -296,20 +296,16 @@ select { cursor: pointer; }
   font-size: 12.5px;
 }
 
-.tab-modified {
-  width: 7px;
-  height: 7px;
+.tab-status-dot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--accent);
   flex-shrink: 0;
-  display: none;
+  background: rgba(128, 128, 128, 0.45);
 }
-.tab.modified .tab-modified { display: block; }
-.tab.modified .tab-close { display: none; }
-.tab:hover .tab-modified { display: none; }
-.tab:hover .tab-close,
-.tab.modified:hover .tab-close { display: flex; }
-
+.tab-status-dot.dot-active { background: var(--accent); }
+.tab-status-dot.dot-modified { background: #FF453A; }
+.tab:hover .tab-status-dot { display: none; }
 .tab-close {
   display: none;
   align-items: center;
@@ -321,6 +317,7 @@ select { cursor: pointer; }
   flex-shrink: 0;
   transition: background 0.1s;
 }
+.tab:hover .tab-close { display: flex; }
 .tab-close:hover { background: var(--tab-close-hover); }
 .tab-close svg { pointer-events: none; }
 
@@ -570,6 +567,7 @@ select { cursor: pointer; }
   display: flex;
   overflow: hidden;
   min-height: 0;
+  position: relative;
 }
 
 #editor-panel, #preview-panel {
@@ -716,7 +714,9 @@ select { cursor: pointer; }
 #html-preview {
   flex: 1;
   width: 100%;
+  height: 100%;
   border: none;
+  display: block;
 }
 
 /* ─── View Modes ─────────────────────────────────────────────────────── */
@@ -778,7 +778,10 @@ select { cursor: pointer; }
   overflow-y: hidden;
   height: 100%;
 }
-#terminal-tabs::-webkit-scrollbar { display: none; }
+/* ─── Global Scrollbars ─────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  display: none;
+}
 
 .term-tab {
   display: flex;
@@ -875,13 +878,13 @@ select { cursor: pointer; }
 
 /* ─── Splash Screen ──────────────────────────────────────────────────── */
 #splash-screen {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: var(--splash-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1100;
+  z-index: 100;
   -webkit-app-region: drag;
 }
 

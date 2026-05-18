@@ -11,8 +11,7 @@ window.PreviewManager = {
 
     if (tab.type === 'html') {
       window.previewContent.style.display = 'none'
-      window.htmlPreview.style.display = 'flex'
-      window.htmlPreview.style.flex = '1'
+      window.htmlPreview.style.display = 'block'
 
       let content = tab.content
       if (tab.filePath) {
@@ -26,9 +25,13 @@ window.PreviewManager = {
           content = baseTag + content
         }
       }
-      
-      window.htmlPreview.removeAttribute('src')
-      window.htmlPreview.srcdoc = content
+
+      // Blob URLs are same-origin and always work in Electron
+      if (window.htmlPreview._blobUrl) URL.revokeObjectURL(window.htmlPreview._blobUrl)
+      const blob = new Blob([content], { type: 'text/html; charset=utf-8' })
+      window.htmlPreview._blobUrl = URL.createObjectURL(blob)
+      window.htmlPreview.removeAttribute('srcdoc')
+      window.htmlPreview.src = window.htmlPreview._blobUrl
       return
     }
 

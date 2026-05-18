@@ -19,8 +19,13 @@ window.EditorManager = {
         'Ctrl-S': () => window.saveCurrentTab()
       }
     })
-
+    
+    // Note: CodeMirror 5 does not support minimap natively. 
+    // We would need an addon like 'codemirror-minimap'.
+    // Since we are using standard CM5 addons, let's leave this for now.
+    
     this.editor.on('change', () => {
+      if (this._loading) return
       const tab = window.activeTab()
       if (!tab) return
       tab.content = this.editor.getValue()
@@ -80,9 +85,11 @@ window.EditorManager = {
 
   loadTabIntoEditor(tab) {
     if (!this.editor) return
+    this._loading = true
     this.editor.setOption('mode', this.getEditorMode(tab.type))
     this.editor.setValue(tab.content)
     this.editor.clearHistory()
+    this._loading = false
     this.editor.focus()
     window.updatePreview()
   }

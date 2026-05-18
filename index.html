@@ -122,6 +122,42 @@
           <div id="preview-content"></div>
           <iframe id="html-preview" sandbox="allow-scripts allow-same-origin" style="display:none;"></iframe>
         </div>
+        <!-- Splash lives inside panels so terminal stays visible below it -->
+        <div id="splash-screen" style="display:none">
+          <div id="splash-inner">
+            <div id="splash-logo">
+              <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+                <rect width="72" height="72" rx="16" fill="url(#splash-grad)"/>
+                <defs>
+                  <linearGradient id="splash-grad" x1="0" y1="0" x2="72" y2="72" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#1a1a2e"/>
+                    <stop offset="100%" stop-color="#0d0d1a"/>
+                  </linearGradient>
+                </defs>
+                <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle"
+                      font-family="'SF Mono', 'Menlo', monospace" font-size="26" font-weight="700"
+                      fill="url(#splash-text-grad)">&lt;/&gt;</text>
+                <defs>
+                  <linearGradient id="splash-text-grad" x1="14" y1="26" x2="58" y2="46" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#5BC8F5"/>
+                    <stop offset="100%" stop-color="#A78BFA"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <h1 id="splash-title">CodeView</h1>
+            <div id="splash-actions">
+              <button class="splash-btn primary" id="splash-open-file">Open File…</button>
+              <button class="splash-btn" id="splash-open-folder">Open Folder…</button>
+              <button class="splash-btn" id="splash-new-file">New File</button>
+              <button class="splash-btn" id="splash-terminal">Terminal</button>
+            </div>
+            <div id="splash-recents">
+              <div id="splash-recents-label">Recent Files</div>
+              <div id="splash-recents-list"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Terminal resize handle -->
@@ -153,43 +189,6 @@
         </div>
       </div>
 
-    </div>
-  </div>
-
-  <!-- Splash screen -->
-  <div id="splash-screen">
-    <div id="splash-inner">
-      <div id="splash-logo">
-        <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-          <rect width="72" height="72" rx="16" fill="url(#splash-grad)"/>
-          <defs>
-            <linearGradient id="splash-grad" x1="0" y1="0" x2="72" y2="72" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#1a1a2e"/>
-              <stop offset="100%" stop-color="#0d0d1a"/>
-            </linearGradient>
-          </defs>
-          <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle"
-                font-family="'SF Mono', 'Menlo', monospace" font-size="26" font-weight="700"
-                fill="url(#splash-text-grad)">&lt;/&gt;</text>
-          <defs>
-            <linearGradient id="splash-text-grad" x1="14" y1="26" x2="58" y2="46" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#5BC8F5"/>
-              <stop offset="100%" stop-color="#A78BFA"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-      <h1 id="splash-title">CodeView</h1>
-      <div id="splash-actions">
-        <button class="splash-btn primary" id="splash-open-file">Open File…</button>
-        <button class="splash-btn" id="splash-open-folder">Open Folder…</button>
-        <button class="splash-btn" id="splash-new-file">New File</button>
-        <button class="splash-btn" id="splash-terminal">Terminal</button>
-      </div>
-      <div id="splash-recents">
-        <div id="splash-recents-label">Recent Files</div>
-        <div id="splash-recents-list"></div>
-      </div>
     </div>
   </div>
 

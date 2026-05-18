@@ -6,11 +6,11 @@ A native macOS code and markdown editor built with Electron. Designed for develo
 
 - **Native macOS look and feel** — hidden titlebar with traffic lights, vibrancy sidebar, system font defaults
 - **Git Integration** — visual status indicators in the sidebar (modified, untracked, added) and current branch display in the toolbar
-- **Splash screen** — branded launch screen with quick actions (Open File, Open Folder, New File, Terminal) and recent files list
+- **Splash screen** — branded launch screen with quick actions (Open File, Open Folder, New File, Terminal) and recent files list; persists until user interacts and hides automatically when files are open
 - **Integrated terminal** — full zsh terminal with PTY support, bottom-aligned tabs, active state highlight, maximize/restore, and persistent state
 - **Syntax-highlighted editor** — CodeMirror-powered with language-specific highlighting for 10+ file types
 - **Live preview** — rendered markdown preview with full GFM support (tables, task lists, fenced code)
-- **HTML preview** — live rendered HTML with `<base>` tag injection for relative asset support and instant `srcdoc` updates
+- **HTML preview** — live rendered HTML using blob URLs for reliable same-origin rendering; `<base>` tag injection preserves relative asset paths
 - **Split view** — editor and preview side by side, or toggle between edit-only and preview-only modes
 - **Synchronized scrolling** — optional linked scrolling between editor and preview in split view
 - **Collapsible sidebar** — vertical tabs and file tree, collapse/expand with toolbar button or `Cmd+B`
