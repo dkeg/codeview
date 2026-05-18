@@ -9,17 +9,17 @@ window.FileTree = {
     const name = folderPath.split('/').pop()
     this.openFolders.push({ path: folderPath, name, expanded: {}, collapsed: false })
     this.renderAllFolderSections()
-    saveSessionDebounced()
+    window.saveSessionDebounced()
   },
 
   removeFolder(folderPath) {
     this.openFolders = this.openFolders.filter(f => f.path !== folderPath)
     this.renderAllFolderSections()
-    saveSessionDebounced()
+    window.saveSessionDebounced()
   },
 
   renderAllFolderSections() {
-    fileTreesContainer.innerHTML = ''
+    window.fileTreesContainer.innerHTML = ''
     this.openFolders.forEach(folder => this.renderFolderSection(folder))
   },
 
@@ -33,7 +33,7 @@ window.FileTree = {
         <svg class="folder-section-toggle" width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
           <path d="M4.427 7.427l3.396 3.396a.25.25 0 00.354 0l3.396-3.396A.25.25 0 0011.396 7H4.604a.25.25 0 00-.177.427z"/>
         </svg>
-        <span class="folder-section-name">${escHtml(folder.name)}</span>
+        <span class="folder-section-name">${window.escHtml(folder.name)}</span>
         <button class="folder-section-remove" title="Remove folder">
           <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
             <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z"/>
@@ -51,7 +51,7 @@ window.FileTree = {
       if (e.target.closest('.folder-section-remove')) return
       folder.collapsed = !folder.collapsed
       section.classList.toggle('collapsed', folder.collapsed)
-      saveSessionDebounced()
+      window.saveSessionDebounced()
     })
 
     removeBtn.addEventListener('click', (e) => {
@@ -59,14 +59,14 @@ window.FileTree = {
       this.removeFolder(folder.path)
     })
 
-    fileTreesContainer.appendChild(section)
+    window.fileTreesContainer.appendChild(section)
     this.renderFileTree(folder.path, treeEl, 0, folder)
   },
 
   async renderFileTree(dirPath, container, depth, folder) {
     container.innerHTML = ''
     let entries
-    try { entries = await api.readDir(dirPath) } catch { return }
+    try { entries = await window.api.readDir(dirPath) } catch { return }
 
     // Fetch git status for the folder if we're at depth 0
     if (depth === 0) {
@@ -86,8 +86,8 @@ window.FileTree = {
       item.className = 'tree-item' + (entry.isDirectory ? ' directory' : '') + gitClass
       item.style.paddingLeft = (6 + depth * 14) + 'px'
 
-      const icon = entry.isDirectory ? Icons.iconFolder() : Icons.iconForPath(entry.name)
-      item.innerHTML = `<span class="tree-item-icon">${icon}</span><span class="tree-item-name">${escHtml(entry.name)}</span>`
+      const icon = entry.isDirectory ? window.Icons.iconFolder() : window.Icons.iconForPath(entry.name)
+      item.innerHTML = `<span class="tree-item-icon">${icon}</span><span class="tree-item-name">${window.escHtml(entry.name)}</span>`
 
       if (entry.isDirectory) {
         const childContainer = document.createElement('div')
@@ -114,7 +114,7 @@ window.FileTree = {
         item.addEventListener('click', async () => {
           container.querySelectorAll('.tree-item').forEach(i => i.classList.remove('active'))
           item.classList.add('active')
-          if (this.isEditableFile(entry.name)) await openFile(entry.path)
+          if (this.isEditableFile(entry.name)) await window.openFile(entry.path)
         })
 
         container.appendChild(item)

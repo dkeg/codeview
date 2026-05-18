@@ -6,7 +6,7 @@ window.GitManager = {
   currentBranch: null,
 
   async getStatus(folderPath) {
-    const result = await api.getGitStatus(folderPath)
+    const result = await window.api.getGitStatus(folderPath)
     if (result.success) {
       this.statusCache.set(folderPath, {
         lastUpdate: Date.now(),
@@ -18,7 +18,7 @@ window.GitManager = {
   },
 
   async updateBranch(folderPath) {
-    const result = await api.getGitBranch(folderPath)
+    const result = await window.api.getGitBranch(folderPath)
     const display = document.getElementById('git-branch-display')
     const nameEl = document.getElementById('branch-name')
     
@@ -32,14 +32,14 @@ window.GitManager = {
   },
 
   async refreshAll() {
-    for (const folder of FileTree.openFolders) {
+    for (const folder of window.FileTree.openFolders) {
       await this.getStatus(folder.path)
       // Only show branch for the first open folder for now
-      if (folder === FileTree.openFolders[0]) {
+      if (folder === window.FileTree.openFolders[0]) {
         await this.updateBranch(folder.path)
       }
     }
-    FileTree.renderAllFolderSections()
+    window.FileTree.renderAllFolderSections()
   },
 
   getFileStatus(folderPath, relativePath) {

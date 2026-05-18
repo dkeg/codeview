@@ -28,10 +28,10 @@ window.TabManager = {
     if (!tab) return
     this.activeTabId = id
     this.renderTabs()
-    loadTabIntoEditor(tab)
-    updateToolbarTitle()
-    updateSplashScreen()
-    saveSessionDebounced()
+    window.loadTabIntoEditor(tab)
+    window.updateToolbarTitle()
+    window.updateSplashScreen()
+    window.saveSessionDebounced()
   },
 
   closeTab(id) {
@@ -40,7 +40,7 @@ window.TabManager = {
 
     if (tab.modified) {
       if (!confirm(`Save changes to "${tab.name}" before closing?`)) return
-      if (tab.filePath) api.writeFile(tab.filePath, tab.content)
+      if (tab.filePath) window.api.writeFile(tab.filePath, tab.content)
     }
 
     const idx = this.tabs.indexOf(tab)
@@ -50,7 +50,7 @@ window.TabManager = {
       const next = this.tabs[idx] || this.tabs[idx - 1] || null
       this.activeTabId = next ? next.id : null
       if (next) {
-        loadTabIntoEditor(next)
+        window.loadTabIntoEditor(next)
       } else {
         if (window.editor) window.editor.setValue('')
         document.getElementById('file-name-display').textContent = ''
@@ -59,24 +59,24 @@ window.TabManager = {
     }
 
     this.renderTabs()
-    updateToolbarTitle()
-    updateSplashScreen()
-    saveSessionDebounced()
+    window.updateToolbarTitle()
+    window.updateSplashScreen()
+    window.saveSessionDebounced()
   },
 
   renderTabs() {
     if (this.tabs.length === 0) {
-      tabsList.innerHTML = '<div class="tabs-empty">No open files</div>'
+      window.tabsList.innerHTML = '<div class="tabs-empty">No open files</div>'
       return
     }
-    tabsList.innerHTML = ''
+    window.tabsList.innerHTML = ''
     this.tabs.forEach(tab => {
       const el = document.createElement('div')
       el.className = 'tab' + (tab.id === this.activeTabId ? ' active' : '') + (tab.modified ? ' modified' : '')
       el.dataset.id = tab.id
       el.innerHTML = `
-        <span class="tab-icon">${Icons.iconForType(tab.type)}</span>
-        <span class="tab-name">${escHtml(tab.name)}</span>
+        <span class="tab-icon">${window.Icons.iconForType(tab.type)}</span>
+        <span class="tab-name">${window.escHtml(tab.name)}</span>
         <span class="tab-modified"></span>
         <button class="tab-close" title="Close">
           <svg width="9" height="9" viewBox="0 0 16 16" fill="currentColor">
@@ -92,7 +92,7 @@ window.TabManager = {
         e.stopPropagation()
         this.closeTab(tab.id)
       })
-      tabsList.appendChild(el)
+      window.tabsList.appendChild(el)
     })
   }
 };

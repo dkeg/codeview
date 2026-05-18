@@ -143,6 +143,7 @@ codeview/
 ├── main.js             # Electron main process (Git, PTY, Files)
 ├── preload.js          # Secure API bridge
 ├── renderer.js         # Core UI Orchestrator
+├── globals.js          # Global state & DOM initializer
 ├── terminal.js         # Terminal Management
 ├── file-tree.js        # Sidebar & Multi-folder logic
 ├── git.js              # Git Status & Branch logic

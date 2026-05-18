@@ -80,20 +80,20 @@ const TERMINAL_THEMES = {
 };
 
 window.getTerminalTheme = function() {
-  const ansi = TERMINAL_THEMES[settings.termTheme || 'apple-dark'] || TERMINAL_THEMES['apple-dark']
+  const ansi = TERMINAL_THEMES[window.settings.termTheme || 'apple-dark'] || TERMINAL_THEMES['apple-dark']
   const bg = getComputedStyle(document.documentElement).getPropertyValue('--editor-bg').trim() || TERMINAL_BASE.background
   return { ...TERMINAL_BASE, background: bg, ...ansi }
 };
 
 window.applyTerminalSettings = function() {
-  const pad = (settings.termPadding || 8) + 'px'
+  const pad = (window.settings.termPadding || 8) + 'px'
   document.documentElement.style.setProperty('--term-padding', pad)
 
-  const ff = settings.termFontFamily || "'SF Mono', monospace"
-  const fs = settings.termFontSize || 13
-  const lh = (settings.termLineHeight || 14) / 10
-  const ls = settings.termLetterSpacing || 0
-  const cursor = settings.termCursorStyle || 'block'
+  const ff = window.settings.termFontFamily || "'SF Mono', monospace"
+  const fs = window.settings.termFontSize || 13
+  const lh = (window.settings.termLineHeight || 14) / 10
+  const ls = window.settings.termLetterSpacing || 0
+  const cursor = window.settings.termCursorStyle || 'block'
   const theme = window.getTerminalTheme()
 
   window.terminals.forEach(({ xterm, fitAddon }) => {
@@ -111,17 +111,17 @@ window.applyTerminalSettings = function() {
 window.openTerminal = async function(cwd, startMaximized = false) {
   if (!window.terminalVisible) {
     window.terminalVisible = true
-    terminalPanel.style.display = 'flex'
-    terminalResizeHandle.style.display = ''
+    window.terminalPanel.style.display = 'flex'
+    window.terminalResizeHandle.style.display = ''
     document.getElementById('btn-toggle-terminal').classList.add('active')
-    updateSplashScreen()
+    window.updateSplashScreen()
   }
 
   if (window.terminals.size === 0) {
     await window.createTerminalSession(cwd)
     if (startMaximized) {
       window.terminalMaximized = true
-      terminalPanel.classList.add('maximized')
+      window.terminalPanel.classList.add('maximized')
       window.updateMaximizeIcon()
       const t = window.terminals.get(window.activeTerminalId)
       if (t) requestAnimationFrame(() => t.fitAddon.fit())
@@ -137,12 +137,12 @@ window.openTerminal = async function(cwd, startMaximized = false) {
 
 window.createTerminalSession = async function(cwd) {
   const id = window.nextTermId++
-  const openCwd = cwd || (openFolders.length > 0 ? openFolders[0].path : null)
+  const openCwd = cwd || (window.FileTree.openFolders.length > 0 ? window.FileTree.openFolders[0].path : null)
 
   const sessionEl = document.createElement('div')
   sessionEl.className = 'term-session active'
   sessionEl.id = 'term-session-' + id
-  terminalSessions.appendChild(sessionEl)
+  window.terminalSessions.appendChild(sessionEl)
 
   // Deactivate any currently active session while we set up
   window.terminals.forEach(({ sessionEl: el, tabEl }) => {
@@ -150,13 +150,13 @@ window.createTerminalSession = async function(cwd) {
     tabEl.classList.remove('active')
   })
 
-  const ff = settings.termFontFamily || "'SF Mono', monospace"
-  const fs = settings.termFontSize || 13
-  const lh = (settings.termLineHeight || 14) / 10
-  const ls = settings.termLetterSpacing || 0
-  const cursor = settings.termCursorStyle || 'block'
+  const ff = window.settings.termFontFamily || "'SF Mono', monospace"
+  const fs = window.settings.termFontSize || 13
+  const lh = (window.settings.termLineHeight || 14) / 10
+  const ls = window.settings.termLetterSpacing || 0
+  const cursor = window.settings.termCursorStyle || 'block'
 
-  const xterm = new Terminal({
+  const xterm = new window.Terminal({
     fontFamily: ff,
     fontSize: fs,
     lineHeight: lh,
@@ -167,17 +167,17 @@ window.createTerminalSession = async function(cwd) {
     allowTransparency: true
   })
 
-  const fitAddon = new FitAddon.FitAddon()
-  const webLinksAddon = new WebLinksAddon.WebLinksAddon((e, uri) => api.openExternal(uri))
+  const fitAddon = new window.FitAddon.FitAddon()
+  const webLinksAddon = new window.WebLinksAddon.WebLinksAddon((e, uri) => window.api.openExternal(uri))
   xterm.loadAddon(fitAddon)
   xterm.loadAddon(webLinksAddon)
   xterm.open(sessionEl)
   await new Promise(r => requestAnimationFrame(r))
   fitAddon.fit()
 
-  const termId = await api.terminal.create(openCwd)
+  const termId = await window.api.terminal.create(openCwd)
 
-  api.terminal.onOutput((evtId, data) => {
+  window.api.terminal.onOutput((evtId, data) => {
     if (evtId !== termId) return
     // Intercept magic open commands from mview shell function
     const magic = data.match(/__CV_OPEN__:([^:]+):([^\r\n]+)/)
@@ -191,14 +191,14 @@ window.createTerminalSession = async function(cwd) {
     xterm.write(data)
   })
 
-  api.terminal.onExit((evtId) => {
+  window.api.terminal.onExit((evtId) => {
     if (evtId !== termId) return
     window.closeTerminalSession(id)
   })
 
-  xterm.onData(data => api.terminal.input(termId, data))
+  xterm.onData(data => window.api.terminal.input(termId, data))
 
-  xterm.onResize(({ cols, rows }) => api.terminal.resize(termId, cols, rows))
+  xterm.onResize(({ cols, rows }) => window.api.terminal.resize(termId, cols, rows))
 
   const initialTabName = openCwd ? openCwd.split('/').filter(Boolean).pop() : 'shell'
 
@@ -216,8 +216,14 @@ window.createTerminalSession = async function(cwd) {
   `
 
   xterm.onTitleChange(title => {
-    if (title) tabEl.querySelector('.term-tab-label').textContent = title
+    if (!title) return
+    // Clean up title: handle paths like ~/projects/app or /usr/bin
+    // Many shells send the current path or even "user@host: path"
+    let cleanTitle = title.split(':').pop().trim() // handle "user@host: path"
+    cleanTitle = cleanTitle.split('/').filter(Boolean).pop() || cleanTitle
+    if (cleanTitle) tabEl.querySelector('.term-tab-label').textContent = cleanTitle
   })
+
   tabEl.addEventListener('click', (e) => {
     if (e.target.closest('.term-tab-close')) return
     window.switchTerminalSession(id)
@@ -227,7 +233,7 @@ window.createTerminalSession = async function(cwd) {
     window.closeTerminalSession(id)
   })
   const newBtn = document.getElementById('btn-terminal-new')
-  terminalTabs.insertBefore(tabEl, newBtn)
+  window.terminalTabs.insertBefore(tabEl, newBtn)
 
   window.terminals.set(id, { xterm, fitAddon, sessionEl, tabEl, termId })
   window.switchTerminalSession(id)
@@ -252,7 +258,7 @@ window.switchTerminalSession = function(id) {
 window.closeTerminalSession = function(id) {
   const t = window.terminals.get(id)
   if (!t) return
-  api.terminal.kill(t.termId)
+  window.api.terminal.kill(t.termId)
   t.xterm.dispose()
   t.sessionEl.remove()
   t.tabEl.remove()
@@ -269,13 +275,13 @@ window.closeTerminalSession = function(id) {
 window.hideTerminal = function() {
   window.terminalVisible = false
   window.terminalMaximized = false
-  terminalPanel.style.display = 'none'
-  terminalPanel.classList.remove('maximized')
-  terminalResizeHandle.style.display = 'none'
+  window.terminalPanel.style.display = 'none'
+  window.terminalPanel.classList.remove('maximized')
+  window.terminalResizeHandle.style.display = 'none'
   document.getElementById('btn-toggle-terminal').classList.remove('active')
   window.updateMaximizeIcon()
-  if (editor) editor.refresh()
-  updateSplashScreen()
+  if (window.editor) window.editor.refresh()
+  window.updateSplashScreen()
 };
 
 window.toggleTerminal = function() {
@@ -303,7 +309,7 @@ window.updateMaximizeIcon = function() {
 
 window.toggleTerminalMaximize = function() {
   window.terminalMaximized = !window.terminalMaximized
-  terminalPanel.classList.toggle('maximized', window.terminalMaximized)
+  window.terminalPanel.classList.toggle('maximized', window.terminalMaximized)
   window.updateMaximizeIcon()
   if (window.activeTerminalId !== null) {
     const t = window.terminals.get(window.activeTerminalId)

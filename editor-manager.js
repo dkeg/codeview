@@ -21,15 +21,15 @@ window.EditorManager = {
     })
 
     this.editor.on('change', () => {
-      const tab = activeTab()
+      const tab = window.activeTab()
       if (!tab) return
       tab.content = this.editor.getValue()
       if (!tab.modified) {
         tab.modified = true
-        renderTabs()
-        updateToolbarTitle()
+        window.renderTabs()
+        window.updateToolbarTitle()
       }
-      updatePreview()
+      window.updatePreview()
     })
 
     this.editor.on('scroll', () => {
@@ -37,8 +37,8 @@ window.EditorManager = {
       window.isSyncScrolling = true
       const info = this.editor.getScrollInfo()
       const ratio = info.top / (info.height - info.clientHeight)
-      const previewMax = previewPanel.scrollHeight - previewPanel.clientHeight
-      previewPanel.scrollTop = ratio * previewMax
+      const previewMax = window.previewPanel.scrollHeight - window.previewPanel.clientHeight
+      window.previewPanel.scrollTop = ratio * previewMax
       requestAnimationFrame(() => { window.isSyncScrolling = false })
     })
 
@@ -84,6 +84,6 @@ window.EditorManager = {
     this.editor.setValue(tab.content)
     this.editor.clearHistory()
     this.editor.focus()
-    updatePreview()
+    window.updatePreview()
   }
 };

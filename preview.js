@@ -3,16 +3,16 @@
 
 window.PreviewManager = {
   updatePreview() {
-    const tab = activeTab()
-    htmlPreview.style.display = 'none'
-    previewContent.style.display = ''
+    const tab = window.activeTab()
+    window.htmlPreview.style.display = 'none'
+    window.previewContent.style.display = ''
 
-    if (!tab) { previewContent.innerHTML = ''; return }
+    if (!tab) { window.previewContent.innerHTML = ''; return }
 
     if (tab.type === 'html') {
-      previewContent.style.display = 'none'
-      htmlPreview.style.display = 'flex'
-      htmlPreview.style.flex = '1'
+      window.previewContent.style.display = 'none'
+      window.htmlPreview.style.display = 'flex'
+      window.htmlPreview.style.flex = '1'
 
       let content = tab.content
       if (tab.filePath) {
@@ -27,37 +27,37 @@ window.PreviewManager = {
         }
       }
       
-      htmlPreview.removeAttribute('src')
-      htmlPreview.srcdoc = content
+      window.htmlPreview.removeAttribute('src')
+      window.htmlPreview.srcdoc = content
       return
     }
 
     if (tab.type === 'json') {
       try {
         const parsed = JSON.parse(tab.content)
-        previewContent.className = 'json-preview'
-        previewContent.textContent = JSON.stringify(parsed, null, 2)
+        window.previewContent.className = 'json-preview'
+        window.previewContent.textContent = JSON.stringify(parsed, null, 2)
       } catch {
-        previewContent.className = 'json-preview'
-        previewContent.textContent = tab.content
+        window.previewContent.className = 'json-preview'
+        window.previewContent.textContent = tab.content
       }
       return
     }
 
-    previewContent.className = ''
-    previewContent.innerHTML = api.renderMarkdown(tab.content)
-    previewContent.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.disabled = true })
+    window.previewContent.className = ''
+    window.previewContent.innerHTML = window.api.renderMarkdown(tab.content)
+    window.previewContent.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.disabled = true })
   },
 
   bindPreviewLinks() {
-    previewContent.addEventListener('click', (e) => {
+    window.previewContent.addEventListener('click', (e) => {
       const link = e.target.closest('a[href]')
       if (!link) return
       const href = link.getAttribute('href')
       if (!href || href.startsWith('#')) return
       e.preventDefault()
       if (href.startsWith('http://') || href.startsWith('https://')) {
-        api.openExternal(href)
+        window.api.openExternal(href)
       }
     })
   }

@@ -4,6 +4,25 @@ All notable changes to CodeView will be documented here.
 
 ---
 
+## [1.2.1] — 2026-05-17
+
+### New Features
+
+- **Nerd Font support** — added JetBrainsMono, FiraCode, and CascadiaCode Nerd Font options to Editor and Terminal settings for modern developer icons
+- **Dynamic Terminal Tabs** — tabs now update in real-time to show the current directory name (e.g., `codeview`) while keeping the interface clean
+
+### Bug Fixes
+
+- **Maximized Terminal Isolation** — UI elements (icons, sidebar) are now completely hidden when the terminal is maximized, providing a distraction-free environment
+- **Toolbar Dragging** — main toolbar is now always on top and draggable, even when the terminal is maximized
+- **Build Integrity** — fixed a critical issue where modular JS files and the `marked` dependency were missing from the production build
+
+### Architecture
+
+- **Globals Module** — introduced `globals.js` to provide a robust, single source of truth for global state and DOM references
+
+---
+
 ## [1.2.0] — 2026-05-17
 
 ### New Features

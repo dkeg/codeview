@@ -468,6 +468,8 @@ select { cursor: pointer; }
   flex-shrink: 0;
   gap: 8px;
   -webkit-app-region: drag;
+  position: relative;
+  z-index: 1000; /* Above maximized terminal */
 }
 #toolbar > * { -webkit-app-region: no-drag; }
 
@@ -733,23 +735,29 @@ select { cursor: pointer; }
   height: 260px;
   min-height: 80px;
   max-height: 80vh;
+  border-top: 1px solid var(--sidebar-border);
 }
 
 #terminal-panel.maximized {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 900; /* Over main content/sidebar */
   height: 100% !important;
   max-height: 100%;
+  padding-top: 38px;
+  background: var(--terminal-bg);
 }
 
-#terminal-panel.maximized #terminal-sessions {
-  padding-top: 34px;
+/* Hide toolbar buttons but keep toolbar for dragging when terminal is maximized */
+#app:has(#terminal-panel.maximized) #toolbar > *:not(#toolbar-center) {
+  display: none;
 }
 
-#terminal-panel.maximized #terminal-sessions .term-session {
-  padding-top: 0;
+#app:has(#terminal-panel.maximized) #sidebar,
+#app:has(#terminal-panel.maximized) #sidebar-resize-handle {
+  display: none;
 }
+
 
 #terminal-titlebar {
   display: flex;
@@ -757,7 +765,6 @@ select { cursor: pointer; }
   height: 38px;
   padding: 0 6px 0 8px;
   background: var(--terminal-bg);
-  border-top: 1px solid var(--terminal-titlebar-border);
   flex-shrink: 0;
   gap: 4px;
 }
@@ -874,7 +881,8 @@ select { cursor: pointer; }
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
+  z-index: 1100;
+  -webkit-app-region: drag;
 }
 
 #splash-inner {
@@ -883,6 +891,7 @@ select { cursor: pointer; }
   align-items: center;
   width: 420px;
   padding: 48px 40px 36px;
+  -webkit-app-region: no-drag;
 }
 
 #splash-logo { margin-bottom: 14px; }

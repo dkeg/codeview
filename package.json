@@ -1,6 +1,6 @@
 {
   "name": "codeview",
-  "version": "1.0.0",
+  "version": "1.2.1",
   "description": "A native macOS code and markdown editor with integrated terminal",
   "main": "main.js",
   "repository": { "type": "git", "url": "https://github.com/dkeg/codeview.git" },
@@ -46,10 +46,13 @@
       ]
     },
     "files": [
-      "main.js", "preload.js", "renderer.js", "index.html", "styles.css",
+      "main.js", "preload.js", "renderer.js", "globals.js", "icons.js", 
+      "terminal.js", "git.js", "file-tree.js", "settings.js", "tabs.js", 
+      "editor-manager.js", "preview.js", "index.html", "styles.css",
       "node_modules/codemirror/**",
       "node_modules/@xterm/**",
       "node_modules/node-pty/**",
+      "node_modules/marked/**",
       "assets/**"
     ]
   }
