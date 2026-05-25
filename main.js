@@ -245,12 +245,12 @@ ipcMain.handle('terminal-create', async (event, cwd) => {
   const id = nextTerminalId++
   const shell = process.env.SHELL || '/bin/zsh'
 
-  const ptyProcess = pty.spawn(shell, [], {
+  const ptyProcess = pty.spawn(shell, ['-l'], {
     name: 'xterm-256color',
     cols: 80,
     rows: 24,
     cwd: cwd || app.getPath('home'),
-    env: { ...process.env, TERM: 'xterm-256color' }
+    env: { ...process.env, TERM: 'xterm-256color', COLORTERM: 'truecolor', LANG: process.env.LANG || 'en_US.UTF-8' }
   })
 
   ptyProcess.onData(data => {
