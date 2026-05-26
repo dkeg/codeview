@@ -114,6 +114,13 @@ Open with `Cmd+,` or via the settings icon. Press `Escape` or click outside to c
 
 ## Installation
 
+### Homebrew (recommended)
+
+```bash
+brew tap dkeg/codeview
+brew install --cask codeview
+```
+
 ### From Source
 
 ```bash
