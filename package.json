@@ -1,6 +1,6 @@
 {
   "name": "codeview",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "A native macOS code and markdown editor with integrated terminal",
   "main": "main.js",
   "repository": {

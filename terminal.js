@@ -128,6 +128,7 @@ window.openTerminal = async function(cwd, startMaximized = false) {
       window.terminalMaximized = true
       window.terminalPanel.classList.add('maximized')
       window.updateMaximizeIcon()
+      window.updateToolbarTitle()
       const t = window.terminals.get(window.activeTerminalId)
       if (t) requestAnimationFrame(() => t.fitAddon.fit())
     }
@@ -320,6 +321,7 @@ window.hideTerminal = function() {
   window.updateCollapseIcon()
   if (window.editor) window.editor.refresh()
   window.updateSplashScreen()
+  window.updateToolbarTitle()
 };
 
 window.toggleTerminal = function() {
@@ -362,6 +364,7 @@ window.toggleTerminalMaximize = function() {
     }
   }
   if (!window.terminalMaximized && window.editor) window.editor.refresh()
+  window.updateToolbarTitle()
 };
 
 window.collapseTerminal = function() {

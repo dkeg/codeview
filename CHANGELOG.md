@@ -4,6 +4,15 @@ All notable changes to CodeView will be documented here.
 
 ---
 
+## [1.4.2] — 2026-05-25
+
+### Bug Fixes
+
+- **File name hidden in maximized terminal** — title bar now clears the filename when the terminal is in full-screen mode; restores it when terminal is closed or restored
+- **Splash screen scoped to editor area** — when terminal is open in lower-panel mode and all files are closed, the splash screen correctly appears only in the editor portion above the terminal
+
+---
+
 ## [1.4.1] — 2026-05-26
 
 ### Bug Fixes

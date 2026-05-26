@@ -277,7 +277,7 @@ window.addToRecents = addToRecents
 // ─── UI state ─────────────────────────────────────────────────────────────────
 function updateToolbarTitle() {
   const tab = window.activeTab()
-  if (!tab) {
+  if (!tab || window.terminalMaximized) {
     if (window.fileNameDisplay) window.fileNameDisplay.textContent = ''
     if (window.modifiedIndicator) window.modifiedIndicator.style.display = 'none'
     window.api.setTitle('CodeView')
