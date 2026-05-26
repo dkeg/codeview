@@ -37,6 +37,9 @@
     "mac": {
       "category": "public.app-category.developer-tools",
       "icon": "assets/icon-dark.icns",
+      "notarize": {
+        "teamId": "Y8W7627T7W"
+      },
       "target": [
         {
           "target": "dmg",
