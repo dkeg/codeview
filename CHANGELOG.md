@@ -4,6 +4,19 @@ All notable changes to CodeView will be documented here.
 
 ---
 
+## [1.4.1] — 2026-05-26
+
+### Bug Fixes
+
+- **Emoji overlap in terminal** — fixed wide-character rendering by activating Unicode 11 width tables via `@xterm/addon-unicode11`; root cause was `allowProposedApi` not set on the Terminal instance, causing the `unicode.activeVersion` setter to throw silently
+- **Terminal default directory** — new sessions now open at `$HOME` instead of the first open folder
+
+### Other
+
+- README reorganized from a flat feature list into structured sections with screenshots
+
+---
+
 ## [1.4.0] — 2026-05-25
 
 ### New Features

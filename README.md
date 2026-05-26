@@ -2,6 +2,18 @@
 
 A native macOS code and markdown editor built with Electron. Designed for developers — integrated terminal, syntax highlighting for 10+ languages, live preview, and a clean native macOS interface.
 
+## Screenshots
+
+| Splash Screen | Editor & Preview |
+|:---:|:---:|
+| ![Splash Screen](assets/splash-screen.png) | ![Markdown Editor](assets/md-editor.png) |
+
+| Terminal | Settings |
+|:---:|:---:|
+| ![Terminal](assets/terminal.png) | ![Settings](assets/settings-screen.png) |
+
+---
+
 ## Overview
 
 CodeView is a lightweight editor that stays out of your way. It opens fast, looks at home on macOS, and brings your shell into the same window — no switching between apps to run a command or check a git status.

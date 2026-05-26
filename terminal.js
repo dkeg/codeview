@@ -142,7 +142,7 @@ window.openTerminal = async function(cwd, startMaximized = false) {
 
 window.createTerminalSession = async function(cwd) {
   const id = window.nextTermId++
-  const openCwd = cwd || (window.FileTree.openFolders.length > 0 ? window.FileTree.openFolders[0].path : null)
+  const openCwd = cwd || window.homeDir || null
 
   const sessionEl = document.createElement('div')
   sessionEl.className = 'term-session active'
@@ -169,7 +169,8 @@ window.createTerminalSession = async function(cwd) {
     cursorStyle: cursor,
     cursorBlink: true,
     theme: window.getTerminalTheme(),
-    allowTransparency: true
+    allowTransparency: true,
+    allowProposedApi: true
   })
 
   const fitAddon = new window.FitAddon.FitAddon()
