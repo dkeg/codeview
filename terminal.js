@@ -1,4 +1,4 @@
-/* globals api, settings, terminalPanel, terminalTabs, terminalSessions, terminalResizeHandle, openFolders, updateSplashScreen, editor, activeTerminalId:true, terminalVisible:true, terminalMaximized:true, Terminal, FitAddon, WebLinksAddon */
+/* globals api, settings, terminalPanel, terminalTabs, terminalSessions, terminalResizeHandle, openFolders, updateSplashScreen, editor, activeTerminalId:true, terminalVisible:true, terminalMaximized:true, Terminal, FitAddon, WebLinksAddon, Unicode11Addon */
 'use strict';
 
 // Terminal state
@@ -177,6 +177,15 @@ window.createTerminalSession = async function(cwd) {
   xterm.loadAddon(fitAddon)
   xterm.loadAddon(webLinksAddon)
   xterm.open(sessionEl)
+  try {
+    if (window.Unicode11Addon) {
+      const unicode11Addon = new window.Unicode11Addon.Unicode11Addon()
+      xterm.loadAddon(unicode11Addon)
+      xterm.unicode.activeVersion = '11'
+    }
+  } catch (e) {
+    console.warn('Unicode11Addon failed to load:', e)
+  }
   await new Promise(r => requestAnimationFrame(r))
   await new Promise(r => requestAnimationFrame(r))
   fitAddon.fit()

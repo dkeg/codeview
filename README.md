@@ -2,40 +2,103 @@
 
 A native macOS code and markdown editor built with Electron. Designed for developers — integrated terminal, syntax highlighting for 10+ languages, live preview, and a clean native macOS interface.
 
-## Features
+## Overview
 
-- **Native macOS look and feel** — hidden titlebar with traffic lights, vibrancy sidebar, system font defaults
-- **Activity bar** — vertical icon rail with Home, Files, Folders, Git, and Terminal sections; Settings and Help at the bottom
-- **Home panel** — at-a-glance view of all open files and folders with click-to-navigate
-- **Git Integration** — visual status indicators in the sidebar (modified, untracked, added) and current branch display in the toolbar
-- **Splash screen** — branded launch screen with quick actions (Open File, Open Folder, New File, Terminal) and recent files list; persists until user interacts and hides automatically when files are open
-- **Integrated terminal** — full zsh terminal with PTY support, bottom-aligned tabs, maximize/collapse/restore, and shell prompt theme support (Oh My Zsh, Starship, Powerlevel10k, etc.)
-- **Shell environment detection** — resolves your full login-shell environment on startup so PATH, NVM, pyenv, and other tool shims work immediately
-- **Syntax-highlighted editor** — CodeMirror-powered with language-specific highlighting for 10+ file types
-- **Live preview** — rendered markdown preview with full GFM support (tables, task lists, fenced code)
-- **HTML preview** — live rendered HTML using blob URLs for reliable same-origin rendering; `<base>` tag injection preserves relative asset paths
-- **Split view** — editor and preview side by side, or toggle between edit-only and preview-only modes
-- **Synchronized scrolling** — optional linked scrolling between editor and preview in split view
-- **Collapsible sidebar** — vertical tabs and file tree, collapse/expand with toolbar button or `Cmd+B`
-- **Multi-folder file tree** — open multiple folders as independently collapsible sections
-- **10+ language modes** — Markdown, JSON, HTML, JavaScript, TypeScript, Python, YAML, Shell scripts, plain text
-- **Resizable panes** — drag to resize the sidebar, editor, terminal, and preview panels
-- **Session restore** — reopen previously open tabs and folders on launch
-- **System theme** — follows macOS dark/light mode automatically, or set manually
-- **Customizable fonts** — independent editor and terminal font selection
-- **Adjustable margins** — configure side and top/bottom editor padding
-- **Terminal settings** — independent font family, font size, padding, line height, letter spacing, cursor style, syntax color theme
-- **Syntax color themes** — six terminal ANSI palettes: Apple Dark, Kaku, Dracula, Nord, Solarized Dark, One Dark
-- **Tabbed settings** — organized into Editor, Terminal, and General tabs; Check for Updates in General
-- **In-app help** — keyboard shortcut reference panel accessible from the `?` button
-- **Clickable links** — hyperlinks in preview open in your default browser
-- **Recent files** — splash screen shows recently opened files
+CodeView is a lightweight editor that stays out of your way. It opens fast, looks at home on macOS, and brings your shell into the same window — no switching between apps to run a command or check a git status.
 
-## Screenshots
+- Native window chrome with hidden titlebar, traffic lights, and vibrancy sidebar
+- Full zsh terminal with PTY support, prompt theme detection, and correct shell environment
+- Live preview for Markdown and HTML side by side with the editor
+- Built-in Git status with branch indicator and per-file color coding
+- Session restore — reopens tabs and folders exactly where you left off
 
-| Splash Screen | Editor View |
-|---------------|-------------|
-| *(splash-screen.png)* | *(primary-view.png)* |
+---
+
+## Editor
+
+CodeMirror 5 powers the editor with syntax highlighting across 10+ file types. Line numbers, active-line highlight, bracket matching, and auto-close brackets are on by default.
+
+**View Modes** — switch between editor-only, split, and preview-only with `Cmd+1 / 2 / 3`. In split mode, scrolling can be synchronized between the editor and preview panes.
+
+**Supported File Types**
+
+| Extension | Mode |
+|-----------|------|
+| `.md`, `.markdown` | Markdown — rendered preview with full GFM support |
+| `.html`, `.htm` | HTML — live rendered preview via blob URL |
+| `.json` | JSON — formatted preview |
+| `.js`, `.mjs`, `.cjs` | JavaScript |
+| `.ts`, `.tsx` | TypeScript |
+| `.py` | Python |
+| `.yaml`, `.yml` | YAML |
+| `.sh`, `.bash`, `.zsh` | Shell scripts |
+| `.txt` | Plain text |
+
+---
+
+## Terminal
+
+A full PTY-backed zsh terminal lives at the bottom of the window. It sources your `.zshrc` on startup, so prompt themes like Oh My Zsh, Starship, and Powerlevel10k work out of the box.
+
+- **Shell environment** — resolves your full login-shell environment at launch so PATH, NVM, pyenv, and other tool shims are available immediately
+- **Multiple sessions** — tabbed interface with per-session current-directory labels
+- **Maximize / Collapse / Restore** — full-panel mode with a dedicated button; collapses to just the tab bar without killing the session
+- **Resizable** — drag the top divider to adjust terminal height
+- **Customizable** — independent font, size, padding, line height, letter spacing, cursor style, and ANSI color palette
+
+**Terminal Color Palettes:** Apple Dark, Kaku, Dracula, Nord, Solarized Dark, One Dark
+
+---
+
+## Git Integration
+
+- **Branch indicator** — current branch name shown in the center of the toolbar
+- **File status** — modified files show an orange **M**, untracked files show a green **??** in the sidebar tree
+- **Auto-refresh** — status updates when the window regains focus
+
+---
+
+## Sidebar & Navigation
+
+The **activity bar** on the left gives quick access to every view:
+
+| Icon | Panel |
+|------|-------|
+| Home | Open files and folders at a glance, click to jump |
+| Files | Open file tabs |
+| Folders | Multi-folder file tree |
+| Git | Git status view |
+| Terminal | Jump to terminal |
+| `?` | Keyboard shortcut reference |
+| Settings | Open preferences |
+
+The sidebar can be collapsed with `Cmd+B` or the toolbar toggle. Multiple folders open as independently collapsible sections in the file tree.
+
+---
+
+## Settings
+
+Open with `Cmd+,` or via the settings icon. Press `Escape` or click outside to close.
+
+### Editor
+- Font family (JetBrains Mono, Fira Code, SF Mono, Menlo, and Nerd Font variants)
+- Font size (10–24px)
+- Side and vertical margins
+- Line numbers toggle
+- Synchronized scrolling toggle
+
+### Terminal
+- Font family and size (independent from editor)
+- Padding, line height, letter spacing
+- Cursor style — block, underline, or bar
+- ANSI color palette
+
+### General
+- Theme — System (auto), Light, or Dark
+- Session restore — reopen tabs and folders on launch
+- Check for Updates
+
+---
 
 ## Installation
 
@@ -55,7 +118,9 @@ npm start
 npm run build
 ```
 
-The built `.app` will be in `dist/mac-arm64/` (for Apple Silicon) or `dist/mac-x64/` (for Intel).
+The built `.app` will be in `dist/mac-arm64/` (Apple Silicon) or `dist/mac/` (Intel).
+
+---
 
 ## Keyboard Shortcuts
 
@@ -70,97 +135,23 @@ The built `.app` will be in `dist/mac-arm64/` (for Apple Silicon) or `dist/mac-x
 | `Cmd+1` | Editor only |
 | `Cmd+2` | Split view |
 | `Cmd+3` | Preview only |
-| `Cmd+B` | Toggle sidebar |
 | `Cmd+Shift+P` | Cycle view modes |
+| `Cmd+B` | Toggle sidebar |
 | `` Cmd+` `` | Toggle terminal |
 | `Cmd+,` | Toggle settings |
 | `Escape` | Close settings or help |
 
-## Terminal
-
-The integrated terminal provides a full zsh shell at the bottom of the application:
-
-- **Bottom Tabs:** Terminal sessions are managed at the bottom for a cleaner layout.
-- **Active State:** Current session is highlighted with a lighter shade and a color dot indicator.
-- **Persistence:** Starts in the first open folder or `$HOME`.
-- **Resizable:** Drag the top divider to adjust height.
-- **Maximize/Restore:** Dedicated button for full-panel terminal mode.
-- **Multiple sessions:** Support for multiple tabbed sessions.
-
-## Git Integration
-
-CodeView includes built-in Git support for a smoother development workflow:
-
-- **Sidebar Status:** Files in the tree are color-coded based on their Git state:
-    - **Orange (M):** Modified files.
-    - **Green (??):** Untracked/New files.
-- **Branch Indicator:** The current Git branch is displayed in the center of the toolbar.
-- **Auto-Refresh:** Status and branch information refresh automatically when the window is focused.
-
-## Settings
-
-Access via `Cmd+,` or the app menu. Settings are organized into three tabs:
-
-### Editor
-- **Font Family** — JetBrains Mono, Fira Code, SF Mono, Menlo, and more
-- **Font Size** — 10px to 24px slider
-- **Margins** — Adjust side and vertical padding
-- **Line Numbers** — Toggle line number gutter
-- **Sync Scroll** — Toggle synchronized scrolling
-
-### Terminal
-- **Font & Size** — Independent terminal typography settings
-- **Layout** — Padding, line height, and letter spacing
-- **Cursor** — Style (Block, underline, or bar)
-- **Syntax Color** — Six ANSI palettes (Apple Dark, Kaku, Dracula, Nord, Solarized Dark, One Dark)
-
-### General
-- **Theme** — System (auto), Light, or Dark
-- **Restore Session** — Reopen previously open tabs on launch
-
-## Supported File Types
-
-| Extension | Mode |
-|-----------|------|
-| `.md`, `.markdown` | Markdown with syntax highlighting |
-| `.json` | JSON with formatted preview |
-| `.html`, `.htm` | HTML with live rendered preview |
-| `.js`, `.mjs`, `.cjs` | JavaScript |
-| `.ts`, `.tsx` | TypeScript |
-| `.py` | Python |
-| `.yaml`, `.yml` | YAML |
-| `.sh`, `.bash`, `.zsh` | Shell scripts |
-| `.txt` | Plain text |
+---
 
 ## Tech Stack
 
-- [Electron](https://www.electronjs.org/) — cross-platform desktop app framework
-- [CodeMirror 5](https://codemirror.net/5/) — syntax-highlighted code editor
+- [Electron](https://www.electronjs.org/) — desktop app framework
+- [CodeMirror 5](https://codemirror.net/5/) — syntax-highlighted editor
 - [xterm.js](https://xtermjs.org/) — terminal emulator
-- [node-pty](https://github.com/microsoft/node-pty) — native PTY bindings for Node.js
-- [marked](https://marked.js.org/) — fast markdown parser and renderer
+- [node-pty](https://github.com/microsoft/node-pty) — native PTY bindings
+- [marked](https://marked.js.org/) — Markdown parser and renderer
 
-## Project Structure
-
-```
-codeview/
-├── main.js             # Electron main process (Git, PTY, Files)
-├── preload.js          # Secure API bridge
-├── renderer.js         # Core UI Orchestrator
-├── globals.js          # Global state & DOM initializer
-├── terminal.js         # Terminal Management
-├── file-tree.js        # Sidebar & Multi-folder logic
-├── git.js              # Git Status & Branch logic
-├── tabs.js             # Editor Tab Management
-├── editor-manager.js   # CodeMirror Implementation
-├── preview.js          # Preview Rendering
-├── settings.js         # Preferences & Modal logic
-├── icons.js            # SVG Library & Mapping
-├── index.html          # App layout + script loaders
-├── styles.css          # Global Styling
-├── package.json        # Dependencies and build config
-└── CHANGELOG.md        # Version history
-```
+---
 
 ## License
 
