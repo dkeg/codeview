@@ -33,6 +33,7 @@ contextBridge.exposeInMainWorld('api', {
   setTitle: (title) => ipcRenderer.invoke('set-title', title),
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
   getHomeDir: () => ipcRenderer.invoke('get-home-dir'),
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
 
   // Markdown rendering
   renderMarkdown: (content) => {

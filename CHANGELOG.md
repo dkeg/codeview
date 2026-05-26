@@ -4,6 +4,35 @@ All notable changes to CodeView will be documented here.
 
 ---
 
+## [1.4.0] — 2026-05-25
+
+### New Features
+
+- **Activity bar** — vertical icon rail on the left with Home, Files, Folders, Git, and Terminal sections; Settings and Help buttons at the bottom
+- **Home panel** — sidebar panel showing all currently open files and folders at a glance with click-to-navigate
+- **Help panel** — in-app keyboard shortcut reference accessible from the activity bar `?` button
+- **Terminal collapse** — minimize terminal to its tab bar (↓ button) without closing the session; expands back on demand
+- **Check for updates** — Settings → General tab now has a "Check for Updates" button that compares your version against the latest GitHub release
+- **Shell environment detection** — main process resolves the full login-shell environment on startup so PATH, NVM, pyenv, and other tool shims are available in the terminal from the first keystroke
+- **zsh prompt theme support** — terminal now spawns `zsh -l -i` so `.zshrc` is sourced and prompt themes (Oh My Zsh, Starship, Powerlevel10k, etc.) display correctly
+
+### Bug Fixes
+
+- **Terminal prompt not appearing** — fixed a race condition where the shell's initial prompt output could be buffered and dropped before the terminal session ID was established; output is now queued and flushed once the IPC handshake completes
+- **Terminal crash on missing folder** — fixed a crash (exit code 1, zero output) when the session restored a folder path that no longer existed on disk; cwd is now validated with `fs.existsSync` before being passed to node-pty, falling back to the home directory
+- **Settings covered by toolbar** — settings and help overlays were behind the toolbar (`z-index: 200` vs `1000`); raised to `2000` so they correctly cover the full content area including toolbar buttons
+- **No way to close settings** — settings panel now closes on Escape key, clicking the backdrop, and `Cmd+,` toggles it (open → close → open)
+- **Activity bar border through traffic lights** — replaced full-height `border-right` with a `::after` pseudo-element that starts below the 52 px traffic-light spacer
+- **Full-screen terminal blocks file open** — opening a file while the terminal is maximized now automatically restores it to its normal partial height so the editor is visible
+
+### Architecture
+
+- **Output buffering in terminal sessions** — `createTerminalSession` now buffers `terminal-output` IPC events received before the session ID is known and flushes them immediately after `terminal.create` resolves
+- **Sidebar panels system** — sidebar is now composed of named panels (`panel-home`, `panel-files`, `panel-folders`, `panel-git`) toggled by `setActiveActivity()`; replaces the previous single-view sidebar
+- **`resolveShellEnv` in main process** — spawns a login shell at startup to capture the full user environment; result is used for all subsequent PTY spawns
+
+---
+
 ## [1.3.0] — 2026-05-18
 
 ### Bug Fixes

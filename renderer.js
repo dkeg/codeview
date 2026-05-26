@@ -6,6 +6,7 @@ function initDomRefs() {
   const $ = window.$;
   if (!$) return;
 
+  window.activityBar          = $('activity-bar');
   window.sidebar              = $('sidebar');
   window.tabsList             = $('tabs-list');
   window.fileTreesContainer   = $('file-trees-container');
@@ -28,9 +29,75 @@ function initDomRefs() {
 
 // ─── Bridge Functions ────────────────────────────────────────────────────────
 window.activeTab = () => (window.TabManager ? window.TabManager.activeTab() : null)
-window.renderTabs = () => { if (window.TabManager) window.TabManager.renderTabs() }
+window.renderTabs = () => {
+  if (window.TabManager) window.TabManager.renderTabs()
+  window.updateHomeSection()
+}
 window.updatePreview = () => { if (window.PreviewManager) window.PreviewManager.updatePreview() }
 window.loadTabIntoEditor = (tab) => { if (window.EditorManager) window.EditorManager.loadTabIntoEditor(tab) }
+
+// ─── Home Section ────────────────────────────────────────────────────────────
+window.updateHomeSection = function() {
+  const filesEl = window.$('home-open-files')
+  const foldersEl = window.$('home-open-folders')
+  if (!filesEl || !foldersEl) return
+
+  const tabs = window.TabManager ? window.TabManager.tabs : []
+  const activeId = window.TabManager ? window.TabManager.activeTabId : null
+
+  const filesLabel = '<div class="home-label">Open Files</div>'
+  if (tabs.length === 0) {
+    filesEl.innerHTML = filesLabel + '<div class="home-empty">No open files</div>'
+  } else {
+    filesEl.innerHTML = filesLabel + tabs.map(t =>
+      `<div class="home-item${t.id === activeId ? ' active' : ''}" data-tab-id="${t.id}">
+        <span class="home-item-icon">${window.Icons ? window.Icons.iconForType(t.type) : ''}</span>
+        <span class="home-item-name">${window.escHtml(t.name)}</span>
+        ${t.modified ? '<span class="home-item-dot"></span>' : ''}
+      </div>`
+    ).join('')
+    filesEl.querySelectorAll('.home-item[data-tab-id]').forEach(el => {
+      el.addEventListener('click', () => {
+        if (window.TabManager) window.TabManager.switchTab(parseInt(el.dataset.tabId))
+      })
+    })
+  }
+
+  const foldersLabel = '<div class="home-label">Open Folders</div>'
+  const folders = window.FileTree ? window.FileTree.openFolders : []
+  if (folders.length === 0) {
+    foldersEl.innerHTML = foldersLabel + '<div class="home-empty">No open folders</div>'
+  } else {
+    foldersEl.innerHTML = foldersLabel + folders.map(f =>
+      `<div class="home-item" data-folder="${window.escHtml(f.path)}">
+        <span class="home-item-icon">${window.Icons ? window.Icons.iconFolder() : ''}</span>
+        <span class="home-item-name">${window.escHtml(f.name)}</span>
+      </div>`
+    ).join('')
+    foldersEl.querySelectorAll('.home-item[data-folder]').forEach(el => {
+      el.addEventListener('click', () => {
+        const name = el.querySelector('.home-item-name').textContent
+        document.querySelectorAll('.folder-section-name').forEach(s => {
+          if (s.textContent === name) s.closest('.folder-section-header').scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      })
+    })
+  }
+}
+
+// ─── Help Panel ──────────────────────────────────────────────────────────────
+window.openHelp = function() {
+  const el = window.$('help-overlay')
+  if (el) el.style.display = 'flex'
+  const btn = window.$('btn-help')
+  if (btn) btn.classList.add('active')
+}
+window.closeHelp = function() {
+  const el = window.$('help-overlay')
+  if (el) el.style.display = 'none'
+  const btn = window.$('btn-help')
+  if (btn) btn.classList.remove('active')
+}
 
 // ─── Init ────────────────────────────────────────────────────────────────────
 async function init() {
@@ -127,6 +194,15 @@ async function openFile(filePath, mode) {
     else if (mode === 'split') window.setViewMode('split')
     else if (!window._restoring) window.setViewMode('editor')
     window.addToRecents(result.filePath)
+  }
+
+  if (!window._restoring && window.terminalMaximized) {
+    window.terminalMaximized = false
+    if (window.terminalPanel) window.terminalPanel.classList.remove('maximized')
+    window.updateMaximizeIcon()
+    if (window.editor) window.editor.refresh()
+    const _t = window.activeTerminalId !== null ? window.terminals.get(window.activeTerminalId) : null
+    if (_t) requestAnimationFrame(() => _t.fitAddon.fit())
   }
 }
 window.openFile = openFile
@@ -277,6 +353,7 @@ window.setViewMode = setViewMode
 
 function toggleSidebar() {
   window.sidebarVisible = !window.sidebarVisible
+  if (window.activityBar) window.activityBar.classList.toggle('hidden', !window.sidebarVisible)
   if (window.sidebar) window.sidebar.classList.toggle('hidden', !window.sidebarVisible)
   const app = window.$('app')
   if (app) app.classList.toggle('sidebar-hidden', !window.sidebarVisible)
@@ -304,23 +381,79 @@ function bindToolbar() {
 }
 window.bindToolbar = bindToolbar
 
+function setActiveActivity(name) {
+  window.activeActivity = name
+  document.querySelectorAll('.activity-btn[id^="act-"]').forEach(b => {
+    b.classList.toggle('active', b.id === 'act-' + name)
+  })
+  document.querySelectorAll('.sidebar-panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'panel-' + name)
+  })
+  if (name === 'home') window.updateHomeSection()
+}
+window.setActiveActivity = setActiveActivity
+
 function bindSidebarButtons() {
+  // Panel action buttons
   const btnNew = window.$('btn-new')
   if (btnNew) btnNew.addEventListener('click', window.newFile)
-  
+
   const btnOpen = window.$('btn-open')
   if (btnOpen) btnOpen.addEventListener('click', window.promptOpenFile)
-  
+
   const btnOpenFolder = window.$('btn-open-folder')
   if (btnOpenFolder) {
     btnOpenFolder.addEventListener('click', async () => {
       const folderPath = await window.api.showFolderDialog()
-      if (folderPath && window.FileTree) window.FileTree.addFolder(folderPath)
+      if (folderPath && window.FileTree) {
+        window.FileTree.addFolder(folderPath)
+        window.setActiveActivity('folders')
+      }
     })
   }
-  
+
   const btnToggleSidebar = window.$('btn-sidebar-toggle')
   if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', window.toggleSidebar)
+
+  // Activity bar: section icons
+  const actHome = window.$('act-home')
+  if (actHome) actHome.addEventListener('click', () => window.setActiveActivity('home'))
+
+  const actFiles = window.$('act-files')
+  if (actFiles) actFiles.addEventListener('click', () => window.setActiveActivity('files'))
+
+  const actFolders = window.$('act-folders')
+  if (actFolders) actFolders.addEventListener('click', () => window.setActiveActivity('folders'))
+
+  const actGit = window.$('act-git')
+  if (actGit) actGit.addEventListener('click', () => window.setActiveActivity('git'))
+
+  const actTerminal = window.$('act-terminal')
+  if (actTerminal) actTerminal.addEventListener('click', () => window.toggleTerminal())
+
+  // Activity bar: settings & help
+  const btnSettings = window.$('btn-settings')
+  if (btnSettings) {
+    btnSettings.addEventListener('click', () => {
+      window.closeHelp()
+      window.SettingsManager.openSettings()
+      btnSettings.classList.add('active')
+    })
+  }
+
+  const btnHelp = window.$('btn-help')
+  if (btnHelp) btnHelp.addEventListener('click', () => {
+    if (window.settingsOverlay && window.settingsOverlay.style.display !== 'none') {
+      window.SettingsManager.closeSettings()
+    }
+    window.openHelp()
+  })
+
+  const helpClose = window.$('help-close')
+  if (helpClose) helpClose.addEventListener('click', window.closeHelp)
+
+  // Set initial active state
+  window.setActiveActivity(window.activeActivity || 'folders')
 }
 window.bindSidebarButtons = bindSidebarButtons
 
@@ -379,7 +512,12 @@ function bindMenuEvents() {
   window.api.on('menu-toggle-sidebar', window.toggleSidebar)
   window.api.on('menu-toggle-terminal', window.toggleTerminal)
   window.api.on('open-settings', () => {
-    if (window.SettingsManager) window.SettingsManager.openSettings()
+    if (!window.SettingsManager) return
+    if (window.settingsOverlay && window.settingsOverlay.style.display !== 'none') {
+      window.SettingsManager.closeSettings()
+    } else {
+      window.SettingsManager.openSettings()
+    }
   })
   window.api.on('open-external-file', (filePath) => window.openFile(filePath))
 }

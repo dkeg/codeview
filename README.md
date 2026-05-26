@@ -5,9 +5,12 @@ A native macOS code and markdown editor built with Electron. Designed for develo
 ## Features
 
 - **Native macOS look and feel** — hidden titlebar with traffic lights, vibrancy sidebar, system font defaults
+- **Activity bar** — vertical icon rail with Home, Files, Folders, Git, and Terminal sections; Settings and Help at the bottom
+- **Home panel** — at-a-glance view of all open files and folders with click-to-navigate
 - **Git Integration** — visual status indicators in the sidebar (modified, untracked, added) and current branch display in the toolbar
 - **Splash screen** — branded launch screen with quick actions (Open File, Open Folder, New File, Terminal) and recent files list; persists until user interacts and hides automatically when files are open
-- **Integrated terminal** — full zsh terminal with PTY support, bottom-aligned tabs, active state highlight, maximize/restore, and persistent state
+- **Integrated terminal** — full zsh terminal with PTY support, bottom-aligned tabs, maximize/collapse/restore, and shell prompt theme support (Oh My Zsh, Starship, Powerlevel10k, etc.)
+- **Shell environment detection** — resolves your full login-shell environment on startup so PATH, NVM, pyenv, and other tool shims work immediately
 - **Syntax-highlighted editor** — CodeMirror-powered with language-specific highlighting for 10+ file types
 - **Live preview** — rendered markdown preview with full GFM support (tables, task lists, fenced code)
 - **HTML preview** — live rendered HTML using blob URLs for reliable same-origin rendering; `<base>` tag injection preserves relative asset paths
@@ -15,7 +18,6 @@ A native macOS code and markdown editor built with Electron. Designed for develo
 - **Synchronized scrolling** — optional linked scrolling between editor and preview in split view
 - **Collapsible sidebar** — vertical tabs and file tree, collapse/expand with toolbar button or `Cmd+B`
 - **Multi-folder file tree** — open multiple folders as independently collapsible sections
-- **Modular Architecture** — clean, decoupled codebase with dedicated managers for tabs, terminal, git, and more
 - **10+ language modes** — Markdown, JSON, HTML, JavaScript, TypeScript, Python, YAML, Shell scripts, plain text
 - **Resizable panes** — drag to resize the sidebar, editor, terminal, and preview panels
 - **Session restore** — reopen previously open tabs and folders on launch
@@ -24,7 +26,8 @@ A native macOS code and markdown editor built with Electron. Designed for develo
 - **Adjustable margins** — configure side and top/bottom editor padding
 - **Terminal settings** — independent font family, font size, padding, line height, letter spacing, cursor style, syntax color theme
 - **Syntax color themes** — six terminal ANSI palettes: Apple Dark, Kaku, Dracula, Nord, Solarized Dark, One Dark
-- **Tabbed settings** — organized into Editor, Terminal, and General tabs
+- **Tabbed settings** — organized into Editor, Terminal, and General tabs; Check for Updates in General
+- **In-app help** — keyboard shortcut reference panel accessible from the `?` button
 - **Clickable links** — hyperlinks in preview open in your default browser
 - **Recent files** — splash screen shows recently opened files
 
@@ -70,7 +73,8 @@ The built `.app` will be in `dist/mac-arm64/` (for Apple Silicon) or `dist/mac-x
 | `Cmd+B` | Toggle sidebar |
 | `Cmd+Shift+P` | Cycle view modes |
 | `` Cmd+` `` | Toggle terminal |
-| `Cmd+,` | Settings |
+| `Cmd+,` | Toggle settings |
+| `Escape` | Close settings or help |
 
 ## Terminal
 

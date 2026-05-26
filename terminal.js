@@ -7,6 +7,8 @@ window.activeTerminalId = null;
 window.nextTermId = 1;
 window.terminalVisible = false;
 window.terminalMaximized = false;
+window.terminalCollapsed = false;
+window._savedTerminalHeight = null;
 
 const TERMINAL_BASE = {
   background: '#0d0d0f',
@@ -111,9 +113,12 @@ window.applyTerminalSettings = function() {
 window.openTerminal = async function(cwd, startMaximized = false) {
   if (!window.terminalVisible) {
     window.terminalVisible = true
-    window.terminalPanel.style.display = 'flex'
-    window.terminalResizeHandle.style.display = ''
-    document.getElementById('btn-toggle-terminal').classList.add('active')
+    if (window.terminalPanel) window.terminalPanel.style.display = 'flex'
+    if (window.terminalResizeHandle) window.terminalResizeHandle.style.display = ''
+    const tbtn = document.getElementById('btn-toggle-terminal')
+    if (tbtn) tbtn.classList.add('active')
+    const abtn = document.getElementById('act-terminal')
+    if (abtn) abtn.classList.add('active')
     window.updateSplashScreen()
   }
 
@@ -173,22 +178,27 @@ window.createTerminalSession = async function(cwd) {
   xterm.loadAddon(webLinksAddon)
   xterm.open(sessionEl)
   await new Promise(r => requestAnimationFrame(r))
+  await new Promise(r => requestAnimationFrame(r))
   fitAddon.fit()
 
-  const termId = await window.api.terminal.create(openCwd)
+  // Register handlers BEFORE create so we don't miss the initial shell prompt.
+  // Output that arrives before we have a real termId is buffered and flushed after.
+  let termId = -1
+  const _preBuffer = []
 
-  window.api.terminal.onOutput((evtId, data) => {
+  function _handleOutput(evtId, data) {
     if (evtId !== termId) return
-    // Intercept magic open commands from mview shell function
     const magic = data.match(/__CV_OPEN__:([^:]+):([^\r\n]+)/)
     if (magic) {
-      const mode = magic[1]
-      const filePath = magic[2].trim()
-      // openFile is global in renderer.js
-      window.openFile(filePath, mode)
+      window.openFile(magic[2].trim(), magic[1])
       return
     }
     xterm.write(data)
+  }
+
+  window.api.terminal.onOutput((evtId, data) => {
+    if (termId === -1) { _preBuffer.push([evtId, data]); return }
+    _handleOutput(evtId, data)
   })
 
   window.api.terminal.onExit((evtId) => {
@@ -199,6 +209,16 @@ window.createTerminalSession = async function(cwd) {
   xterm.onData(data => window.api.terminal.input(termId, data))
 
   xterm.onResize(({ cols, rows }) => window.api.terminal.resize(termId, cols, rows))
+
+  termId = await window.api.terminal.create(openCwd)
+
+  // Flush output that arrived before we had the real termId
+  for (const item of _preBuffer) _handleOutput(item[0], item[1])
+
+  // Sync PTY to actual display size now that all handlers are wired up
+  await new Promise(r => requestAnimationFrame(r))
+  await new Promise(r => requestAnimationFrame(r))
+  fitAddon.fit()
 
   const initialTabName = openCwd ? openCwd.split('/').filter(Boolean).pop() : 'shell'
 
@@ -275,11 +295,19 @@ window.closeTerminalSession = function(id) {
 window.hideTerminal = function() {
   window.terminalVisible = false
   window.terminalMaximized = false
-  window.terminalPanel.style.display = 'none'
-  window.terminalPanel.classList.remove('maximized')
-  window.terminalResizeHandle.style.display = 'none'
-  document.getElementById('btn-toggle-terminal').classList.remove('active')
+  window.terminalCollapsed = false
+  window._savedTerminalHeight = null
+  if (window.terminalPanel) {
+    window.terminalPanel.style.display = 'none'
+    window.terminalPanel.classList.remove('maximized', 'collapsed')
+  }
+  if (window.terminalResizeHandle) window.terminalResizeHandle.style.display = 'none'
+  const tbtn = document.getElementById('btn-toggle-terminal')
+  if (tbtn) tbtn.classList.remove('active')
+  const abtn = document.getElementById('act-terminal')
+  if (abtn) abtn.classList.remove('active')
   window.updateMaximizeIcon()
+  window.updateCollapseIcon()
   if (window.editor) window.editor.refresh()
   window.updateSplashScreen()
 };
@@ -294,6 +322,7 @@ window.toggleTerminal = function() {
 
 window.updateMaximizeIcon = function() {
   const btn = document.getElementById('btn-terminal-maximize')
+  if (!btn) return
   if (window.terminalMaximized) {
     btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
       <path d="M5.75 2.5a.75.75 0 000 1.5h2.19l-5 5H.75a.75.75 0 000 1.5h2.69l5-5v2.19a.75.75 0 001.5 0V2.5h-4.19zm4.5 11a.75.75 0 000-1.5H8.06l5-5h2.19a.75.75 0 000-1.5h-2.69l-5 5V8.06a.75.75 0 00-1.5 0v4.44h4.19z"/>
@@ -308,6 +337,10 @@ window.updateMaximizeIcon = function() {
 };
 
 window.toggleTerminalMaximize = function() {
+  // Expand from collapsed before maximizing
+  if (window.terminalCollapsed && !window.terminalMaximized) {
+    window.expandFromCollapsed()
+  }
   window.terminalMaximized = !window.terminalMaximized
   window.terminalPanel.classList.toggle('maximized', window.terminalMaximized)
   window.updateMaximizeIcon()
@@ -321,12 +354,64 @@ window.toggleTerminalMaximize = function() {
   if (!window.terminalMaximized && window.editor) window.editor.refresh()
 };
 
+window.collapseTerminal = function() {
+  if (window.terminalMaximized) {
+    window.terminalMaximized = false
+    window.terminalPanel.classList.remove('maximized')
+    window.updateMaximizeIcon()
+    if (window.editor) window.editor.refresh()
+  }
+  window._savedTerminalHeight = window.terminalPanel.offsetHeight
+  window.terminalCollapsed = true
+  window.terminalPanel.classList.add('collapsed')
+  window.terminalResizeHandle.style.display = 'none'
+  window.updateCollapseIcon()
+}
+
+window.expandFromCollapsed = function() {
+  window.terminalCollapsed = false
+  window.terminalPanel.classList.remove('collapsed')
+  if (window._savedTerminalHeight) {
+    window.terminalPanel.style.height = window._savedTerminalHeight + 'px'
+  }
+  window.terminalResizeHandle.style.display = ''
+  window.updateCollapseIcon()
+  if (window.activeTerminalId !== null) {
+    const t = window.terminals.get(window.activeTerminalId)
+    if (t) requestAnimationFrame(() => t.fitAddon.fit())
+  }
+}
+
+window.toggleTerminalCollapse = function() {
+  if (window.terminalCollapsed) window.expandFromCollapsed()
+  else window.collapseTerminal()
+}
+
+window.updateCollapseIcon = function() {
+  const btn = document.getElementById('btn-terminal-collapse')
+  if (!btn) return
+  if (window.terminalCollapsed) {
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M3.22 10.78a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 0l4.25 4.25a.75.75 0 01-1.06 1.06L8 7.06l-3.72 3.72a.75.75 0 01-1.06 0z"/>
+    </svg>`
+    btn.title = 'Expand Terminal'
+  } else {
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M12.78 5.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 6.28a.75.75 0 011.06-1.06L8 8.94l3.72-3.72a.75.75 0 011.06 0z"/>
+    </svg>`
+    btn.title = 'Minimize Terminal'
+  }
+}
+
 // Bind terminal titlebar buttons
 const _termClose = document.getElementById('btn-terminal-close')
 if (_termClose) _termClose.addEventListener('click', () => window.toggleTerminal())
 
 const _termMaximize = document.getElementById('btn-terminal-maximize')
 if (_termMaximize) _termMaximize.addEventListener('click', () => window.toggleTerminalMaximize())
+
+const _termCollapse = document.getElementById('btn-terminal-collapse')
+if (_termCollapse) _termCollapse.addEventListener('click', () => window.toggleTerminalCollapse())
 
 const _termNew = document.getElementById('btn-terminal-new')
 if (_termNew) _termNew.addEventListener('click', () => window.createTerminalSession())

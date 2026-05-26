@@ -47,12 +47,48 @@ window.SettingsManager = {
       })
     })
 
-    // Add safety checks
-    const settingsClose = window.$('settings-close');
-    if (settingsClose) settingsClose.addEventListener('click', this.closeSettings);
-    
+    const settingsClose = window.$('settings-close')
+    if (settingsClose) settingsClose.addEventListener('click', this.closeSettings)
+
     if (window.settingsOverlay) {
-        window.settingsOverlay.addEventListener('click', (e) => { if (e.target === window.settingsOverlay) this.closeSettings() });
+      window.settingsOverlay.addEventListener('click', (e) => {
+        if (e.target === window.settingsOverlay) this.closeSettings()
+      })
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && window.settingsOverlay && window.settingsOverlay.style.display !== 'none') {
+        this.closeSettings()
+      }
+    })
+
+    // Check for updates
+    const btnUpdate = window.$('btn-check-updates')
+    if (btnUpdate) {
+      btnUpdate.addEventListener('click', async () => {
+        const statusEl = window.$('update-status')
+        btnUpdate.disabled = true
+        if (statusEl) statusEl.textContent = 'Checking…'
+        try {
+          const result = await window.api.checkForUpdates()
+          if (result.error) {
+            if (statusEl) statusEl.textContent = 'Could not check: ' + result.error
+          } else if (!result.latest) {
+            if (statusEl) statusEl.textContent = 'No release info available'
+          } else if (result.current === result.latest) {
+            if (statusEl) statusEl.textContent = `v${result.current} — up to date`
+          } else {
+            if (statusEl) {
+              statusEl.innerHTML = `v${result.current} → <a href="#" id="update-link">v${result.latest} available</a>`
+              const link = window.$('update-link')
+              if (link) link.addEventListener('click', (e) => { e.preventDefault(); window.api.openExternal(result.url) })
+            }
+          }
+        } catch {
+          if (statusEl) statusEl.textContent = 'Check failed'
+        }
+        btnUpdate.disabled = false
+      })
     }
 
     // Editor settings
@@ -89,5 +125,7 @@ window.SettingsManager = {
 
   closeSettings() {
     window.settingsOverlay.style.display = 'none'
+    const btn = window.$('btn-settings')
+    if (btn) btn.classList.remove('active')
   }
 };

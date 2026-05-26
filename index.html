@@ -21,39 +21,114 @@
 <body>
   <div id="app">
 
-    <!-- Sidebar -->
+    <!-- Activity Bar -->
+    <div id="activity-bar">
+      <div id="activity-spacer"></div>
+      <div id="activity-top">
+        <button class="activity-btn" id="act-home" title="Home">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M6.906.664a1.749 1.749 0 012.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0113.25 15h-3.5a.75.75 0 01-.75-.75V9H7v5.25a.75.75 0 01-.75.75h-3.5A1.75 1.75 0 011 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2z"/>
+          </svg>
+        </button>
+        <button class="activity-btn" id="act-files" title="Files">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M2 1.75C2 .784 2.784 0 3.75 0h5.586c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v9.086A1.75 1.75 0 0112.75 16h-9A1.75 1.75 0 012 14.25V1.75zm1.75-.25a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 018 4.25V1.5H3.75zm6.75.56v2.19c0 .138.112.25.25.25h2.19L10.5 2.06z"/>
+          </svg>
+        </button>
+        <button class="activity-btn active" id="act-folders" title="Folders">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5L5.75 1H1.75zM1.5 2.75a.25.25 0 01.25-.25H5.5l1.75 2H14.25a.25.25 0 01.25.25v8.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25V2.75z"/>
+          </svg>
+        </button>
+        <button class="activity-btn" id="act-git" title="Git">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V10.25a2.25 2.25 0 11-1.5 0V5.372A2.25 2.25 0 019.5 3.25zM11 11.75a.75.75 0 101.5 0 .75.75 0 00-1.5 0zm-5.75-9.25a.75.75 0 100 1.5.75.75 0 000-1.5zM3 3.25a2.25 2.25 0 113 2.122V10.25a2.25 2.25 0 11-1.5 0V5.372A2.25 2.25 0 013 3.25zM4.25 11.75a.75.75 0 101.5 0 .75.75 0 00-1.5 0z"/>
+          </svg>
+        </button>
+        <button class="activity-btn" id="act-terminal" title="Terminal (⌘`)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM4.03 5.97a.75.75 0 010 1.06L3.06 8l.97.97a.75.75 0 11-1.06 1.06L1.47 8.53a.75.75 0 010-1.06l1.5-1.5a.75.75 0 011.06 0zm3.44 3.56a.75.75 0 010-1.06l1.5-1.5a.75.75 0 111.06 1.06L9.06 8l.97.97a.75.75 0 11-1.06 1.06l-1.5-1.5zm2.72 1.22H8a.75.75 0 010-1.5h2.19a.75.75 0 010 1.5z"/>
+          </svg>
+        </button>
+      </div>
+      <div id="activity-bottom">
+        <button class="activity-btn" id="btn-settings" title="Settings (⌘,)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.429 1.525a6.593 6.593 0 011.142 0c.036.003.108.036.137.146l.289 1.105c.147.56.55.967.997 1.189.174.086.341.183.501.29.447.299.913.349 1.398.06l.97-.584a.143.143 0 01.18.044 6.43 6.43 0 01.808 1.395.143.143 0 01-.067.18l-.944.584c-.435.268-.608.686-.583 1.112a5.88 5.88 0 010 .582c-.025.426.148.844.583 1.112l.944.583c.059.037.09.121.067.181a6.43 6.43 0 01-.808 1.395.143.143 0 01-.18.043l-.97-.583c-.485-.29-.951-.24-1.398.06-.16.107-.327.204-.501.29-.447.222-.85.629-.997 1.188l-.289 1.105c-.029.11-.101.143-.137.146a6.588 6.588 0 01-1.142 0c-.036-.003-.108-.036-.137-.146l-.289-1.105c-.147-.56-.55-.966-.997-1.189a4.502 4.502 0 01-.501-.29c-.447-.299-.913-.349-1.398-.06l-.97.584a.143.143 0 01-.18-.044 6.433 6.433 0 01-.809-1.395.143.143 0 01.067-.18l.944-.584c.436-.268.608-.686.583-1.112a5.892 5.892 0 010-.582c.025-.426-.147-.844-.583-1.112l-.944-.583a.143.143 0 01-.067-.181 6.435 6.435 0 01.808-1.395.143.143 0 01.18-.044l.97.584c.485.289.951.239 1.398-.06.16-.107.327-.204.502-.29.447-.222.85-.629.997-1.19l.289-1.104c.029-.11.101-.143.137-.146zM8 5.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"/>
+          </svg>
+        </button>
+        <button class="activity-btn" id="btn-help" title="Help &amp; Shortcuts">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M0 8a8 8 0 1116 0A8 8 0 010 8zm8-6.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM6.92 6.085c.081-.16.19-.299.34-.398.145-.097.371-.187.74-.187.28 0 .553.087.738.225A.613.613 0 019 6.25c0 .177-.04.264-.077.318a.956.956 0 01-.277.245c-.076.051-.158.1-.258.161l-.007.004a7.728 7.728 0 00-.313.195 2.416 2.416 0 00-.692.661.75.75 0 001.248.832 1.11 1.11 0 01.208-.175 3.63 3.63 0 01.18-.106 4.66 4.66 0 00.476-.299 2.386 2.386 0 00.756-.896A2.26 2.26 0 0011 6.25a2.113 2.113 0 00-.79-1.677 3.131 3.131 0 00-1.938-.573 3.191 3.191 0 00-1.649.442 2.5 2.5 0 00-.905 1.082.75.75 0 001.202.894zm.258 4.165a1 1 0 112 0 1 1 0 01-2 0z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sidebar Content -->
     <div id="sidebar">
-      <div id="sidebar-header">
-        <div id="traffic-light-spacer"></div>
-        <div id="sidebar-actions">
-          <!-- New file: document with corner fold + plus badge -->
-          <button class="icon-btn" id="btn-new" title="New File (⌘N)">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237V13.25A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75zM8 9.75a.75.75 0 011.5 0v.75h.75a.75.75 0 010 1.5H9.5v.75a.75.75 0 01-1.5 0V12h-.75a.75.75 0 010-1.5H8v-.75z"/>
-            </svg>
-          </button>
-          <!-- Open file: document icon -->
-          <button class="icon-btn" id="btn-open" title="Open File (⌘O)">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75z"/>
-            </svg>
-          </button>
-          <!-- Open folder: folder icon (distinct shape from document) -->
-          <button class="icon-btn" id="btn-open-folder" title="Open Folder (⌘⇧O)">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5L5.75 1H1.75zM1.5 2.75a.25.25 0 01.25-.25H5.5l1.75 2H14.25a.25.25 0 01.25.25v8.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25V2.75z"/>
-            </svg>
-          </button>
+      <div id="sidebar-spacer"></div>
+      <!-- Home Panel -->
+      <div class="sidebar-panel" id="panel-home">
+        <div class="panel-header">
+          <span class="panel-title">HOME</span>
+        </div>
+        <div class="panel-body">
+          <div id="home-open-files"></div>
+          <div id="home-open-folders"></div>
         </div>
       </div>
 
-      <!-- Vertical tabs -->
-      <div id="tabs-section">
-        <div id="tabs-list"></div>
+      <!-- Files Panel -->
+      <div class="sidebar-panel" id="panel-files">
+        <div class="panel-header">
+          <span class="panel-title">OPEN FILES</span>
+          <div class="panel-actions">
+            <button class="icon-btn" id="btn-new" title="New File (⌘N)">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237V13.25A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75zM8 9.75a.75.75 0 011.5 0v.75h.75a.75.75 0 010 1.5H9.5v.75a.75.75 0 01-1.5 0V12h-.75a.75.75 0 010-1.5H8v-.75z"/>
+              </svg>
+            </button>
+            <button class="icon-btn" id="btn-open" title="Open File (⌘O)">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="tabs-list"></div>
+        </div>
       </div>
 
-      <!-- Multi-folder file trees -->
-      <div id="file-trees-container"></div>
+      <!-- Folders Panel -->
+      <div class="sidebar-panel active" id="panel-folders">
+        <div class="panel-header">
+          <span class="panel-title">FOLDERS</span>
+          <div class="panel-actions">
+            <button class="icon-btn" id="btn-open-folder" title="Open Folder (⌘⇧O)">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5L5.75 1H1.75zM1.5 2.75a.25.25 0 01.25-.25H5.5l1.75 2H14.25a.25.25 0 01.25.25v8.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25V2.75z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="file-trees-container"></div>
+        </div>
+      </div>
+
+      <!-- Git Panel -->
+      <div class="sidebar-panel" id="panel-git">
+        <div class="panel-header">
+          <span class="panel-title">GIT</span>
+        </div>
+        <div class="panel-body">
+          <div id="git-panel-content">
+            <div class="panel-empty">Open a folder to see git status</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Sidebar resize handle -->
@@ -160,6 +235,263 @@
         </div>
       </div>
 
+      <!-- Settings covers full main-content area (including terminal) -->
+      <div id="settings-overlay" style="display:none">
+        <div id="settings-header">
+          <span>Settings</span>
+          <button class="icon-btn" id="settings-close">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z"/>
+            </svg>
+          </button>
+        </div>
+        <div id="settings-layout">
+          <nav id="settings-tabs">
+            <button class="settings-tab active" data-tab="editor">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4.72 3.22a.75.75 0 011.06 1.06L2.06 8l3.72 3.72a.75.75 0 11-1.06 1.06L.47 8.53a.75.75 0 010-1.06l4.25-4.25zm6.56 0a.75.75 0 10-1.06 1.06L13.94 8l-3.72 3.72a.75.75 0 101.06 1.06l4.25-4.25a.75.75 0 000-1.06L11.28 3.22z"/></svg>
+              <span>Editor</span>
+            </button>
+            <button class="settings-tab" data-tab="terminal">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM4.03 5.97a.75.75 0 010 1.06L3.06 8l.97.97a.75.75 0 11-1.06 1.06L1.47 8.53a.75.75 0 010-1.06l1.5-1.5a.75.75 0 011.06 0zm3.44 3.56a.75.75 0 010-1.06l1.5-1.5a.75.75 0 111.06 1.06L9.06 8l.97.97a.75.75 0 11-1.06 1.06l-1.5-1.5z"/></svg>
+              <span>Terminal</span>
+            </button>
+            <button class="settings-tab" data-tab="general">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M7.429 1.525a6.593 6.593 0 011.142 0c.036.003.108.036.137.146l.289 1.105c.147.56.55.967.997 1.189.174.086.341.183.501.29.447.299.913.349 1.398.06l.97-.584a.143.143 0 01.18.044 6.43 6.43 0 01.808 1.395.143.143 0 01-.067.18l-.944.584c-.435.268-.608.686-.583 1.112a5.88 5.88 0 010 .582c-.025.426.148.844.583 1.112l.944.583c.059.037.09.121.067.181a6.43 6.43 0 01-.808 1.395.143.143 0 01-.18.043l-.97-.583c-.485-.29-.951-.24-1.398.06-.16.107-.327.204-.501.29-.447.222-.85.629-.997 1.188l-.289 1.105c-.029.11-.101.143-.137.146a6.588 6.588 0 01-1.142 0c-.036-.003-.108-.036-.137-.146l-.289-1.105c-.147-.56-.55-.966-.997-1.189a4.502 4.502 0 01-.501-.29c-.447-.299-.913-.349-1.398-.06l-.97.584a.143.143 0 01-.18-.044 6.433 6.433 0 01-.809-1.395.143.143 0 01.067-.18l.944-.584c.436-.268.608-.686.583-1.112a5.892 5.892 0 010-.582c.025-.426-.147-.844-.583-1.112l-.944-.583a.143.143 0 01-.067-.181 6.435 6.435 0 01.808-1.395.143.143 0 01.18-.044l.97.584c.485.289.951.239 1.398-.06.16-.107.327-.204.502-.29.447-.222.85-.629.997-1.19l.289-1.104c.029-.11.101-.143.137-.146zM8 5.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"/></svg>
+              <span>General</span>
+            </button>
+          </nav>
+          <div id="settings-body">
+
+            <!-- Editor tab -->
+            <div class="settings-tab-panel active" id="settings-panel-editor">
+              <div class="setting-group">
+                <label class="setting-label">Font Family</label>
+                <div class="setting-control">
+                  <select id="setting-font-family">
+                    <option value="'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace">JetBrainsMono Nerd Font</option>
+                    <option value="'FiraCode Nerd Font', 'Fira Code', monospace">FiraCode Nerd Font</option>
+                    <option value="'CascadiaCode Nerd Font', 'Cascadia Code', monospace">CascadiaCode Nerd Font</option>
+                    <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                    <option value="'Fira Code', monospace">Fira Code</option>
+                    <option value="'Cascadia Code', monospace">Cascadia Code</option>
+                    <option value="Hack, monospace">Hack</option>
+                    <option value="'0xProto Nerd Font', monospace">0xProto Nerd Font</option>
+                    <option value="'SF Mono', monospace">SF Mono</option>
+                    <option value="Menlo, monospace">Menlo</option>
+                    <option value="Monaco, monospace">Monaco</option>
+                    <option value="'PT Mono', monospace">PT Mono</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                  </select>
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Font Size <span id="font-size-display">14px</span></label>
+                <div class="setting-control">
+                  <input type="range" id="setting-font-size" min="10" max="24" step="1" value="14">
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Side Margins <span id="side-margin-display">24px</span></label>
+                <div class="setting-control">
+                  <input type="range" id="setting-side-margin" min="8" max="80" step="4" value="24">
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Top &amp; Bottom Margins <span id="tb-margin-display">16px</span></label>
+                <div class="setting-control">
+                  <input type="range" id="setting-tb-margin" min="8" max="80" step="4" value="16">
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Line Numbers</label>
+                <div class="setting-control">
+                  <label class="toggle">
+                    <input type="checkbox" id="setting-line-numbers" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Sync Scroll</label>
+                <div class="setting-control">
+                  <label class="toggle">
+                    <input type="checkbox" id="setting-sync-scroll" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Editor Theme</label>
+                <div class="setting-control">
+                  <select id="setting-editor-theme">
+                    <option value="default">Default</option>
+                    <option value="kaku">Kaku</option>
+                    <option value="dracula">Dracula</option>
+                    <option value="monokai">Monokai</option>
+                    <option value="nord">Nord</option>
+                    <option value="ayu-dark">Ayu Dark</option>
+                    <option value="gruvbox-dark">Gruvbox Dark</option>
+                    <option value="solarized dark">Solarized Dark</option>
+                    <option value="solarized light">Solarized Light</option>
+                    <option value="material-ocean">Material Ocean</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terminal tab -->
+            <div class="settings-tab-panel" id="settings-panel-terminal">
+              <div class="setting-group">
+                <label class="setting-label">Font Family</label>
+                <div class="setting-control">
+                  <select id="setting-term-font-family">
+                    <option value="'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace">JetBrainsMono Nerd Font</option>
+                    <option value="'FiraCode Nerd Font', 'Fira Code', monospace">FiraCode Nerd Font</option>
+                    <option value="'CascadiaCode Nerd Font', 'Cascadia Code', monospace">CascadiaCode Nerd Font</option>
+                    <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                    <option value="'Fira Code', monospace">Fira Code</option>
+                    <option value="'Cascadia Code', monospace">Cascadia Code</option>
+                    <option value="Hack, monospace">Hack</option>
+                    <option value="'0xProto Nerd Font', monospace">0xProto Nerd Font</option>
+                    <option value="'SF Mono', monospace">SF Mono</option>
+                    <option value="Menlo, monospace">Menlo</option>
+                    <option value="Monaco, monospace">Monaco</option>
+                    <option value="'PT Mono', monospace">PT Mono</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                  </select>
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Font Size <span id="term-font-size-display">13px</span></label>
+                <div class="setting-control">
+                  <input type="range" id="setting-term-font-size" min="10" max="24" step="1" value="13">
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Padding <span id="term-padding-display">8px</span></label>
+                <div class="setting-control">
+                  <input type="range" id="setting-term-padding" min="4" max="32" step="2" value="8">
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Line Height <span id="term-line-height-display">1.4</span></label>
+                <div class="setting-control">
+                  <input type="range" id="setting-term-line-height" min="10" max="22" step="1" value="14">
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Letter Spacing <span id="term-letter-spacing-display">0px</span></label>
+                <div class="setting-control">
+                  <input type="range" id="setting-term-letter-spacing" min="0" max="4" step="1" value="0">
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Syntax Color</label>
+                <div class="setting-control">
+                  <select id="setting-term-theme">
+                    <option value="apple-dark">Apple Dark</option>
+                    <option value="kaku">Kaku</option>
+                    <option value="dracula">Dracula</option>
+                    <option value="nord">Nord</option>
+                    <option value="solarized-dark">Solarized Dark</option>
+                    <option value="one-dark">One Dark</option>
+                  </select>
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Cursor Style</label>
+                <div class="setting-control">
+                  <select id="setting-term-cursor">
+                    <option value="block">Block</option>
+                    <option value="underline">Underline</option>
+                    <option value="bar">Bar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- General tab -->
+            <div class="settings-tab-panel" id="settings-panel-general">
+              <div class="setting-group">
+                <label class="setting-label">Theme</label>
+                <div class="setting-control">
+                  <select id="setting-theme">
+                    <option value="system">System</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                  </select>
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">Restore Session</label>
+                <div class="setting-control">
+                  <label class="toggle">
+                    <input type="checkbox" id="setting-restore-session" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="setting-group">
+                <label class="setting-label">
+                  Updates
+                  <span id="update-status"></span>
+                </label>
+                <div class="setting-control">
+                  <button class="setting-btn" id="btn-check-updates">Check for Updates</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Help covers full main-content area (including terminal) -->
+      <div id="help-overlay" style="display:none">
+        <div id="help-header">
+          <span>Help &amp; Shortcuts</span>
+          <button class="icon-btn" id="help-close">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z"/>
+            </svg>
+          </button>
+        </div>
+        <div id="help-body">
+          <div class="help-section">
+            <div class="help-section-title">File</div>
+            <div class="help-shortcut-row"><span>New File</span><kbd class="help-key">⌘N</kbd></div>
+            <div class="help-shortcut-row"><span>Open File</span><kbd class="help-key">⌘O</kbd></div>
+            <div class="help-shortcut-row"><span>Open Folder</span><kbd class="help-key">⌘⇧O</kbd></div>
+            <div class="help-shortcut-row"><span>Save</span><kbd class="help-key">⌘S</kbd></div>
+            <div class="help-shortcut-row"><span>Save As</span><kbd class="help-key">⌘⇧S</kbd></div>
+            <div class="help-shortcut-row"><span>Close Tab</span><kbd class="help-key">⌘W</kbd></div>
+          </div>
+          <div class="help-section">
+            <div class="help-section-title">View</div>
+            <div class="help-shortcut-row"><span>Editor Only</span><kbd class="help-key">⌘1</kbd></div>
+            <div class="help-shortcut-row"><span>Split View</span><kbd class="help-key">⌘2</kbd></div>
+            <div class="help-shortcut-row"><span>Preview Only</span><kbd class="help-key">⌘3</kbd></div>
+            <div class="help-shortcut-row"><span>Cycle View Mode</span><kbd class="help-key">⌘⇧P</kbd></div>
+            <div class="help-shortcut-row"><span>Toggle Sidebar</span><kbd class="help-key">⌘B</kbd></div>
+          </div>
+          <div class="help-section">
+            <div class="help-section-title">Terminal</div>
+            <div class="help-shortcut-row"><span>Toggle Terminal</span><kbd class="help-key">⌘`</kbd></div>
+            <div class="help-shortcut-row"><span>New Session</span><kbd class="help-key">+ button</kbd></div>
+            <div class="help-shortcut-row"><span>Minimize to Tabs</span><kbd class="help-key">↓ button</kbd></div>
+            <div class="help-shortcut-row"><span>Maximize</span><kbd class="help-key">□ button</kbd></div>
+            <div class="help-shortcut-row"><span>Resize Height</span><kbd class="help-key">drag handle</kbd></div>
+          </div>
+          <div class="help-section">
+            <div class="help-section-title">App</div>
+            <div class="help-shortcut-row"><span>Settings</span><kbd class="help-key">⌘,</kbd></div>
+            <div class="help-shortcut-row"><span>Help</span><kbd class="help-key">? button</kbd></div>
+            <div class="help-shortcut-row"><span>Git Branch</span><kbd class="help-key">toolbar center</kbd></div>
+            <div class="help-shortcut-row"><span>Sync Scroll</span><kbd class="help-key">clock button</kbd></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Terminal resize handle -->
       <div class="resize-handle horizontal" id="terminal-resize-handle" style="display:none"></div>
 
@@ -175,6 +507,11 @@
             </button>
           </div>
           <div id="terminal-actions">
+            <button class="icon-btn" id="btn-terminal-collapse" title="Minimize Terminal">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M12.78 5.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 6.28a.75.75 0 011.06-1.06L8 8.94l3.72-3.72a.75.75 0 011.06 0z"/>
+              </svg>
+            </button>
             <button class="icon-btn" id="btn-terminal-maximize" title="Maximize Terminal">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25V2.75A1.75 1.75 0 0014.25 1H1.75zM1.5 2.75a.25.25 0 01.25-.25h12.5a.25.25 0 01.25.25v10.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25V2.75z"/>
@@ -189,200 +526,6 @@
         </div>
       </div>
 
-    </div>
-  </div>
-
-  <!-- Settings modal -->
-  <div id="settings-overlay" style="display:none">
-    <div id="settings-modal">
-      <div id="settings-header">
-        <span>Settings</span>
-        <button class="icon-btn" id="settings-close">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z"/>
-          </svg>
-        </button>
-      </div>
-      <!-- Settings tabs -->
-      <div id="settings-tabs">
-        <button class="settings-tab active" data-tab="editor">Editor</button>
-        <button class="settings-tab" data-tab="terminal">Terminal</button>
-        <button class="settings-tab" data-tab="general">General</button>
-      </div>
-      <div id="settings-body">
-
-        <!-- Editor tab -->
-        <div class="settings-tab-panel active" id="settings-panel-editor">
-          <div class="setting-group">
-            <label class="setting-label">Font Family</label>
-            <div class="setting-control">
-              <select id="setting-font-family">
-                <option value="'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace">JetBrainsMono Nerd Font</option>
-                <option value="'FiraCode Nerd Font', 'Fira Code', monospace">FiraCode Nerd Font</option>
-                <option value="'CascadiaCode Nerd Font', 'Cascadia Code', monospace">CascadiaCode Nerd Font</option>
-                <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
-                <option value="'Fira Code', monospace">Fira Code</option>
-                <option value="'Cascadia Code', monospace">Cascadia Code</option>
-                <option value="Hack, monospace">Hack</option>
-                <option value="'0xProto Nerd Font', monospace">0xProto Nerd Font</option>
-                <option value="'SF Mono', monospace">SF Mono</option>
-                <option value="Menlo, monospace">Menlo</option>
-                <option value="Monaco, monospace">Monaco</option>
-                <option value="'PT Mono', monospace">PT Mono</option>
-                <option value="'Courier New', monospace">Courier New</option>
-              </select>
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Font Size <span id="font-size-display">14px</span></label>
-            <div class="setting-control">
-              <input type="range" id="setting-font-size" min="10" max="24" step="1" value="14">
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Side Margins <span id="side-margin-display">24px</span></label>
-            <div class="setting-control">
-              <input type="range" id="setting-side-margin" min="8" max="80" step="4" value="24">
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Top &amp; Bottom Margins <span id="tb-margin-display">16px</span></label>
-            <div class="setting-control">
-              <input type="range" id="setting-tb-margin" min="8" max="80" step="4" value="16">
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Line Numbers</label>
-            <div class="setting-control">
-              <label class="toggle">
-                <input type="checkbox" id="setting-line-numbers" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Sync Scroll</label>
-            <div class="setting-control">
-              <label class="toggle">
-                <input type="checkbox" id="setting-sync-scroll" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Editor Theme</label>
-            <div class="setting-control">
-              <select id="setting-editor-theme">
-                <option value="default">Default</option>
-                <option value="kaku">Kaku</option>
-                <option value="dracula">Dracula</option>
-                <option value="monokai">Monokai</option>
-                <option value="nord">Nord</option>
-                <option value="ayu-dark">Ayu Dark</option>
-                <option value="gruvbox-dark">Gruvbox Dark</option>
-                <option value="solarized dark">Solarized Dark</option>
-                <option value="solarized light">Solarized Light</option>
-                <option value="material-ocean">Material Ocean</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Terminal tab -->
-        <div class="settings-tab-panel" id="settings-panel-terminal">
-          <div class="setting-group">
-            <label class="setting-label">Font Family</label>
-            <div class="setting-control">
-              <select id="setting-term-font-family">
-                <option value="'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace">JetBrainsMono Nerd Font</option>
-                <option value="'FiraCode Nerd Font', 'Fira Code', monospace">FiraCode Nerd Font</option>
-                <option value="'CascadiaCode Nerd Font', 'Cascadia Code', monospace">CascadiaCode Nerd Font</option>
-                <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
-                <option value="'Fira Code', monospace">Fira Code</option>
-                <option value="'Cascadia Code', monospace">Cascadia Code</option>
-                <option value="Hack, monospace">Hack</option>
-                <option value="'0xProto Nerd Font', monospace">0xProto Nerd Font</option>
-                <option value="'SF Mono', monospace">SF Mono</option>
-                <option value="Menlo, monospace">Menlo</option>
-                <option value="Monaco, monospace">Monaco</option>
-                <option value="'PT Mono', monospace">PT Mono</option>
-                <option value="'Courier New', monospace">Courier New</option>
-              </select>
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Font Size <span id="term-font-size-display">13px</span></label>
-            <div class="setting-control">
-              <input type="range" id="setting-term-font-size" min="10" max="24" step="1" value="13">
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Padding <span id="term-padding-display">8px</span></label>
-            <div class="setting-control">
-              <input type="range" id="setting-term-padding" min="4" max="32" step="2" value="8">
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Line Height <span id="term-line-height-display">1.4</span></label>
-            <div class="setting-control">
-              <input type="range" id="setting-term-line-height" min="10" max="22" step="1" value="14">
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Letter Spacing <span id="term-letter-spacing-display">0px</span></label>
-            <div class="setting-control">
-              <input type="range" id="setting-term-letter-spacing" min="0" max="4" step="1" value="0">
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Syntax Color</label>
-            <div class="setting-control">
-              <select id="setting-term-theme">
-                <option value="apple-dark">Apple Dark</option>
-                <option value="kaku">Kaku</option>
-                <option value="dracula">Dracula</option>
-                <option value="nord">Nord</option>
-                <option value="solarized-dark">Solarized Dark</option>
-                <option value="one-dark">One Dark</option>
-              </select>
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Cursor Style</label>
-            <div class="setting-control">
-              <select id="setting-term-cursor">
-                <option value="block">Block</option>
-                <option value="underline">Underline</option>
-                <option value="bar">Bar</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- General tab -->
-        <div class="settings-tab-panel" id="settings-panel-general">
-          <div class="setting-group">
-            <label class="setting-label">Theme</label>
-            <div class="setting-control">
-              <select id="setting-theme">
-                <option value="system">System</option>
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-              </select>
-            </div>
-          </div>
-          <div class="setting-group">
-            <label class="setting-label">Restore Session</label>
-            <div class="setting-control">
-              <label class="toggle">
-                <input type="checkbox" id="setting-restore-session" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-      </div>
     </div>
   </div>
 

@@ -3,13 +3,31 @@ const fs = require('fs')
 const path = require('path')
 const pty = require('node-pty')
 const { exec } = require('child_process')
+const https = require('https')
+const packageJson = require('./package.json')
 
 let mainWindow = null
 let pendingOpenFile = null
+let resolvedShellEnv = null
 
 // Terminal management
 const terminals = new Map()
 let nextTerminalId = 1
+
+function resolveShellEnv() {
+  const userShell = process.env.SHELL || '/bin/zsh'
+  return new Promise((resolve) => {
+    exec(`"${userShell}" -l -c 'env' 2>/dev/null`, { timeout: 5000, env: process.env }, (err, stdout) => {
+      if (err || !stdout.trim()) { resolve({ ...process.env }); return }
+      const env = { ...process.env }
+      for (const line of stdout.split('\n')) {
+        const idx = line.indexOf('=')
+        if (idx > 0) env[line.slice(0, idx)] = line.slice(idx + 1)
+      }
+      resolve(env)
+    })
+  })
+}
 
 // Handle file open from Finder before window is ready
 app.on('open-file', (event, filePath) => {
@@ -245,19 +263,21 @@ ipcMain.handle('terminal-create', async (event, cwd) => {
   const id = nextTerminalId++
   const shell = process.env.SHELL || '/bin/zsh'
 
-  const ptyProcess = pty.spawn(shell, ['-l'], {
+  const baseEnv = resolvedShellEnv || process.env
+  const safeCwd = (cwd && fs.existsSync(cwd)) ? cwd : app.getPath('home')
+  const ptyProcess = pty.spawn(shell, ['-l', '-i'], {
     name: 'xterm-256color',
     cols: 80,
     rows: 24,
-    cwd: cwd || app.getPath('home'),
-    env: { ...process.env, TERM: 'xterm-256color', COLORTERM: 'truecolor', LANG: process.env.LANG || 'en_US.UTF-8' }
+    cwd: safeCwd,
+    env: { ...baseEnv, TERM: 'xterm-256color', COLORTERM: 'truecolor', LANG: baseEnv.LANG || 'en_US.UTF-8' }
   })
 
   ptyProcess.onData(data => {
     if (mainWindow) mainWindow.webContents.send('terminal-output', id, data)
   })
 
-  ptyProcess.onExit(() => {
+  ptyProcess.onExit(({ exitCode }) => {
     terminals.delete(id)
     if (mainWindow) mainWindow.webContents.send('terminal-exit', id)
   })
@@ -452,6 +472,30 @@ ipcMain.handle('get-git-status', async (event, dirPath) => {
   })
 })
 
+ipcMain.handle('check-for-updates', async () => {
+  return new Promise((resolve) => {
+    const req = https.get(
+      'https://api.github.com/repos/dkeg/codeview/releases/latest',
+      { headers: { 'User-Agent': 'CodeView-App' } },
+      (res) => {
+        let data = ''
+        res.on('data', chunk => { data += chunk })
+        res.on('end', () => {
+          try {
+            const release = JSON.parse(data)
+            const latest = (release.tag_name || '').replace(/^v/, '')
+            resolve({ current: packageJson.version, latest, url: release.html_url || null })
+          } catch {
+            resolve({ current: packageJson.version, latest: null, error: 'Failed to parse response' })
+          }
+        })
+      }
+    )
+    req.on('error', err => resolve({ current: packageJson.version, latest: null, error: err.message }))
+    req.setTimeout(8000, () => { req.destroy(); resolve({ current: packageJson.version, latest: null, error: 'Timed out' }) })
+  })
+})
+
 ipcMain.handle('get-git-branch', async (event, dirPath) => {
   return new Promise((resolve) => {
     exec('git branch --show-current', { cwd: dirPath }, (err, stdout) => {
@@ -465,6 +509,7 @@ ipcMain.handle('get-git-branch', async (event, dirPath) => {
 })
 
 app.whenReady().then(() => {
+  resolveShellEnv().then(env => { resolvedShellEnv = env })
   buildMenu()
   createWindow()
 

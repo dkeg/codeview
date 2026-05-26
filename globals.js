@@ -8,6 +8,7 @@ window.systemTheme = 'light';
 window.homeDir = '';
 window.viewMode = 'split';
 window.sidebarVisible = true;
+window.activeActivity = 'folders';
 window.terminalVisible = false;
 window.terminalMaximized = false;
 window.splashLocked = false;
@@ -16,6 +17,7 @@ window.splashLocked = false;
 window.$ = id => document.getElementById(id);
 
 // Initialize refs as null
+window.activityBar          = null;
 window.sidebar              = null;
 window.tabsList             = null;
 window.fileTreesContainer   = null;

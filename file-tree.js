@@ -21,6 +21,7 @@ window.FileTree = {
   renderAllFolderSections() {
     window.fileTreesContainer.innerHTML = ''
     this.openFolders.forEach(folder => this.renderFolderSection(folder))
+    if (window.updateHomeSection) window.updateHomeSection()
   },
 
   renderFolderSection(folder) {
