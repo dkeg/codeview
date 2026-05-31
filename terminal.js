@@ -239,7 +239,8 @@ window.createTerminalSession = async function(cwd) {
   await new Promise(r => requestAnimationFrame(r))
   fitAddon.fit()
 
-  const initialTabName = openCwd ? openCwd.split('/').filter(Boolean).pop() : 'shell'
+  const initialTabNameRaw = openCwd ? openCwd.split('/').filter(Boolean).pop() : 'shell'
+  const initialTabName = (openCwd === window.homeDir || initialTabNameRaw === '~') ? 'home' : initialTabNameRaw
 
   const tabEl = document.createElement('div')
   tabEl.className = 'term-tab'
@@ -260,6 +261,7 @@ window.createTerminalSession = async function(cwd) {
     // Many shells send the current path or even "user@host: path"
     let cleanTitle = title.split(':').pop().trim() // handle "user@host: path"
     cleanTitle = cleanTitle.split('/').filter(Boolean).pop() || cleanTitle
+    if (cleanTitle === '~') cleanTitle = 'home'
     if (cleanTitle) tabEl.querySelector('.term-tab-label').textContent = cleanTitle
   })
 
