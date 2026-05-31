@@ -10,6 +10,14 @@ window.terminalMaximized = false;
 window.terminalCollapsed = false;
 window._savedTerminalHeight = null;
 
+// Refit all terminals on window resize so the canvas fills the panel correctly
+window.addEventListener('resize', () => {
+  if (!window.terminalVisible) return
+  window.terminals.forEach(({ fitAddon }) => {
+    if (fitAddon) fitAddon.fit()
+  })
+})
+
 const TERMINAL_BASE = {
   background: '#0d0d0f',
   foreground: '#f2f2f7',
