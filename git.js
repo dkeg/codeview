@@ -19,15 +19,8 @@ window.GitManager = {
 
   async updateBranch(folderPath) {
     const result = await window.api.getGitBranch(folderPath)
-    const display = document.getElementById('git-branch-display')
-    const nameEl = document.getElementById('branch-name')
-    
     if (result.success && result.branch) {
       this.currentBranch = result.branch
-      nameEl.textContent = result.branch
-      display.style.display = 'flex'
-    } else {
-      display.style.display = 'none'
     }
   },
 

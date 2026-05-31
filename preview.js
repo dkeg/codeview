@@ -50,6 +50,30 @@ window.PreviewManager = {
     window.previewContent.className = ''
     window.previewContent.innerHTML = window.api.renderMarkdown(tab.content)
     window.previewContent.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.disabled = true })
+    window.PreviewManager.renderMermaid()
+  },
+
+  renderMermaid() {
+    const blocks = window.previewContent.querySelectorAll('pre > code.language-mermaid')
+    if (!blocks.length) return
+    if (!window.mermaid) return
+
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light'
+    window.mermaid.initialize({ startOnLoad: false, theme: isDark ? 'dark' : 'default' })
+
+    blocks.forEach(async (code, i) => {
+      const definition = code.textContent
+      const id = 'mermaid-' + Date.now() + '-' + i
+      try {
+        const { svg } = await window.mermaid.render(id, definition)
+        const wrapper = document.createElement('div')
+        wrapper.className = 'mermaid-diagram'
+        wrapper.innerHTML = svg
+        code.parentElement.replaceWith(wrapper)
+      } catch (e) {
+        code.parentElement.classList.add('mermaid-error')
+      }
+    })
   },
 
   bindPreviewLinks() {

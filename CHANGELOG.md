@@ -4,6 +4,26 @@ All notable changes to CodeView will be documented here.
 
 ---
 
+## [1.5.0] — 2026-05-30
+
+### New Features
+
+- **Mermaid diagram support** — fenced ` ```mermaid ``` ` blocks in markdown files now render as live diagrams in the preview panel; theme-aware (dark/light); errors leave the raw block visible rather than crashing
+- **Slash commands** — type `/` at the start of a blank line in a markdown file to open a searchable command menu with 17 block types: headings, bold, italic, strikethrough, inline code, bullet/numbered/task lists, quote, code block, mermaid, table, divider, link, and image; navigate with arrow keys, confirm with Enter or Tab, dismiss with Escape
+- **Right-click context menu** — right-click anywhere in the markdown editor to reveal a formatting menu; wraps selected text or inserts at cursor: bold, italic, strikethrough, inline code, link, image, heading levels, code block, mermaid, and quote
+
+### Bug Fixes
+
+- **Terminal initial prompt layout** — PTY was always created with hardcoded `cols: 80, rows: 24` regardless of the actual panel size; PTY now receives the real measured dimensions on creation so right-aligned prompt elements (timestamps, git info) render correctly without requiring a maximize/restore cycle
+- **Toolbar title bar cleaned up** — removed file name, modified indicator, and git branch display from the toolbar center; window title always reads "CodeView"
+
+### Build
+
+- Updated `electron-rebuild` → `@electron/rebuild` to fix a `yargs` ESM compatibility error on Node v26
+- Added `mermaid` as a dependency; bundled `mermaid.min.js` in the production build
+
+---
+
 ## [1.4.2] — 2026-05-25
 
 ### Bug Fixes

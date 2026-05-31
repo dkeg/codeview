@@ -163,16 +163,7 @@
             </svg>
           </button>
         </div>
-        <div id="toolbar-center">
-          <div id="git-branch-display" style="display:none">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V10.25a2.25 2.25 0 11-1.5 0V5.372A2.25 2.25 0 019.5 3.25zM11 11.75a.75.75 0 101.5 0 .75.75 0 00-1.5 0zm-5.75-9.25a.75.75 0 100 1.5.75.75 0 000-1.5zM3 3.25a2.25 2.25 0 113 2.122V10.25a2.25 2.25 0 11-1.5 0V5.372A2.25 2.25 0 013 3.25zM4.25 11.75a.75.75 0 101.5 0 .75.75 0 00-1.5 0z"/>
-            </svg>
-            <span id="branch-name"></span>
-          </div>
-          <span id="file-name-display"></span>
-          <span id="modified-indicator" style="display:none">•</span>
-        </div>
+        <div id="toolbar-center"></div>
         <div id="toolbar-right">
           <button class="icon-btn toggle-btn" id="btn-sync-scroll" title="Sync Scroll">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
@@ -565,6 +556,7 @@
   <script src="node_modules/@xterm/addon-fit/lib/addon-fit.js"></script>
   <script src="node_modules/@xterm/addon-web-links/lib/addon-web-links.js"></script>
   <script src="node_modules/@xterm/addon-unicode11/lib/addon-unicode11.js"></script>
+  <script src="node_modules/mermaid/dist/mermaid.min.js"></script>
   <script src="globals.js"></script>
   <script src="icons.js"></script>
   <script src="terminal.js"></script>
@@ -574,6 +566,7 @@
   <script src="tabs.js"></script>
   <script src="editor-manager.js"></script>
   <script src="preview.js"></script>
+  <script src="editor-commands.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>

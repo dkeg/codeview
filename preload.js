@@ -47,7 +47,7 @@ contextBridge.exposeInMainWorld('api', {
 
   // Terminal
   terminal: {
-    create: (cwd) => ipcRenderer.invoke('terminal-create', cwd),
+    create: (cwd, cols, rows) => ipcRenderer.invoke('terminal-create', cwd, cols, rows),
     input:  (id, data) => ipcRenderer.send('terminal-input', id, data),
     resize: (id, cols, rows) => ipcRenderer.send('terminal-resize', id, cols, rows),
     kill:   (id) => ipcRenderer.invoke('terminal-kill', id),

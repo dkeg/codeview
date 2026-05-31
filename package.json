@@ -1,6 +1,6 @@
 {
   "name": "codeview",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "A native macOS code and markdown editor with integrated terminal",
   "main": "main.js",
   "repository": {
@@ -11,7 +11,7 @@
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "rebuild": "electron-rebuild -f -w node-pty --arch=$(node -e 'console.log(process.arch)')",
+    "rebuild": "npx @electron/rebuild -f -w node-pty --arch=$(node -e 'console.log(process.arch)')",
     "build": "npm run rebuild && electron-builder --mac"
   },
   "dependencies": {
@@ -21,9 +21,11 @@
     "@xterm/xterm": "^6.0.0",
     "codemirror": "^5.65.16",
     "marked": "^4.3.0",
+    "mermaid": "^11.15.0",
     "node-pty": "^1.1.0"
   },
   "devDependencies": {
+    "@electron/rebuild": "^4.0.4",
     "electron": "^28.3.3",
     "electron-builder": "^24.13.3",
     "electron-rebuild": "^3.2.9"
@@ -115,12 +117,14 @@
       "tabs.js",
       "editor-manager.js",
       "preview.js",
+      "editor-commands.js",
       "index.html",
       "styles.css",
       "node_modules/codemirror/**",
       "node_modules/@xterm/**",
       "node_modules/node-pty/**",
       "node_modules/marked/**",
+      "node_modules/mermaid/dist/mermaid.min.js",
       "assets/**"
     ]
   }

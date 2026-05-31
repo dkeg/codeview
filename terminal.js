@@ -221,7 +221,7 @@ window.createTerminalSession = async function(cwd) {
 
   xterm.onResize(({ cols, rows }) => window.api.terminal.resize(termId, cols, rows))
 
-  termId = await window.api.terminal.create(openCwd)
+  termId = await window.api.terminal.create(openCwd, xterm.cols, xterm.rows)
 
   // Flush output that arrived before we had the real termId
   for (const item of _preBuffer) _handleOutput(item[0], item[1])

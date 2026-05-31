@@ -32,6 +32,12 @@ CodeMirror 5 powers the editor with syntax highlighting across 10+ file types. L
 
 **View Modes** — switch between editor-only, split, and preview-only with `Cmd+1 / 2 / 3`. In split mode, scrolling can be synchronized between the editor and preview panes.
 
+**Slash Commands** — type `/` at the start of a blank line to open a searchable command menu. Choose from 17 block types including headings, lists, code blocks, Mermaid diagrams, tables, links, and more. Filter by typing, navigate with arrow keys, confirm with Enter.
+
+**Right-Click Context Menu** — right-click anywhere in the editor to access formatting actions. Wraps selected text or inserts at cursor: bold, italic, strikethrough, inline code, link, image, headings, code block, Mermaid, and quote.
+
+**Mermaid Diagrams** — fenced ` ```mermaid ``` ` blocks render as live diagrams in the preview panel, automatically matching the active light or dark theme.
+
 **Supported File Types**
 
 | Extension | Mode |
@@ -169,6 +175,7 @@ The built `.app` will be in `dist/mac-arm64/` (Apple Silicon) or `dist/mac/` (In
 - [xterm.js](https://xtermjs.org/) — terminal emulator
 - [node-pty](https://github.com/microsoft/node-pty) — native PTY bindings
 - [marked](https://marked.js.org/) — Markdown parser and renderer
+- [Mermaid](https://mermaid.js.org/) — Diagram and chart rendering
 
 ---
 

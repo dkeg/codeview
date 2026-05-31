@@ -259,7 +259,7 @@ function buildMenu() {
 }
 
 // IPC: Terminal management
-ipcMain.handle('terminal-create', async (event, cwd) => {
+ipcMain.handle('terminal-create', async (event, cwd, cols, rows) => {
   const id = nextTerminalId++
   const shell = process.env.SHELL || '/bin/zsh'
 
@@ -267,8 +267,8 @@ ipcMain.handle('terminal-create', async (event, cwd) => {
   const safeCwd = (cwd && fs.existsSync(cwd)) ? cwd : app.getPath('home')
   const ptyProcess = pty.spawn(shell, ['-l', '-i'], {
     name: 'xterm-256color',
-    cols: 80,
-    rows: 24,
+    cols: cols || 80,
+    rows: rows || 24,
     cwd: safeCwd,
     env: { ...baseEnv, TERM: 'xterm-256color', COLORTERM: 'truecolor', LANG: baseEnv.LANG || 'en_US.UTF-8' }
   })

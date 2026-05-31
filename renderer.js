@@ -15,8 +15,6 @@ function initDomRefs() {
   window.previewPanel         = $('preview-panel');
   window.previewContent       = $('preview-content');
   window.htmlPreview          = $('html-preview');
-  window.fileNameDisplay      = $('file-name-display');
-  window.modifiedIndicator    = $('modified-indicator');
   window.splashScreen         = $('splash-screen');
   window.settingsOverlay      = $('settings-overlay');
   window.sidebarResizeHandle  = $('sidebar-resize-handle');
@@ -145,7 +143,8 @@ async function init() {
     if (window.EditorManager) window.EditorManager.applyEditorSettings()
     if (window.applyTerminalSettings) window.applyTerminalSettings()
     if (window.EditorManager) window.EditorManager.initEditor()
-    
+    if (window.initEditorCommands) window.initEditorCommands()
+
     window.initResizeHandles()
     window.bindToolbar()
     window.bindSidebarButtons()
@@ -276,16 +275,7 @@ window.addToRecents = addToRecents
 
 // ─── UI state ─────────────────────────────────────────────────────────────────
 function updateToolbarTitle() {
-  const tab = window.activeTab()
-  if (!tab || window.terminalMaximized) {
-    if (window.fileNameDisplay) window.fileNameDisplay.textContent = ''
-    if (window.modifiedIndicator) window.modifiedIndicator.style.display = 'none'
-    window.api.setTitle('CodeView')
-    return
-  }
-  if (window.fileNameDisplay) window.fileNameDisplay.textContent = tab.name
-  if (window.modifiedIndicator) window.modifiedIndicator.style.display = tab.modified ? '' : 'none'
-  window.api.setTitle(tab.name + (tab.modified ? ' — Edited' : '') + ' — CodeView')
+  window.api.setTitle('CodeView')
 }
 window.updateToolbarTitle = updateToolbarTitle
 
