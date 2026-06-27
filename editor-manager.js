@@ -1,4 +1,4 @@
-/* globals CodeMirror, settings, activeTab, renderTabs, updateToolbarTitle, updatePreview, syncScrollActive, isSyncScrolling:true, previewPanel */
+/* globals CodeMirror, settings, activeTab, renderTabs, updateToolbarTitle, updatePreview, syncScrollActive, isSyncScrolling:true, previewContent */
 'use strict';
 
 window.EditorManager = {
@@ -38,13 +38,21 @@ window.EditorManager = {
     })
 
     this.editor.on('scroll', () => {
-      if (!window.syncScrollActive || window.isSyncScrolling) return
+      if (!window.syncScrollActive || window.isSyncScrolling || window.viewMode !== 'split') return
       window.isSyncScrolling = true
-      const info = this.editor.getScrollInfo()
-      const ratio = info.top / (info.height - info.clientHeight)
-      const previewMax = window.previewPanel.scrollHeight - window.previewPanel.clientHeight
-      window.previewPanel.scrollTop = ratio * previewMax
-      requestAnimationFrame(() => { window.isSyncScrolling = false })
+      try {
+        const info = this.editor.getScrollInfo()
+        const editorMax = info.height - info.clientHeight
+        if (editorMax <= 0) return
+        const ratio = info.top / editorMax
+        const el = window.previewContent
+        if (!el) return
+        const previewMax = el.scrollHeight - el.clientHeight
+        if (previewMax <= 0) return
+        el.scrollTop = ratio * previewMax
+      } finally {
+        requestAnimationFrame(() => { window.isSyncScrolling = false })
+      }
     })
 
     this.applyEditorSettings()

@@ -4,6 +4,32 @@ All notable changes to CodeView will be documented here.
 
 ---
 
+## [1.6.0] — 2026-06-27
+
+### New Features
+
+- **Syntax-highlighted code blocks** — fenced code blocks in markdown preview now render with full syntax coloring via highlight.js; language is auto-detected when not specified; tokens use the app's existing theme palette
+- **Table of contents panel** — collapsible outline panel on the right side of the editor; click any heading to jump to it; scroll spy tracks the active section as you move through the preview; resizable width; toggle via toolbar button or `Cmd+Shift+T`
+- **Terminal horizontal split (`hsplit`)** — new toolbar button opens the terminal at the bottom while keeping the editor above; clicking again closes it; if terminal is on the right, switches it to the bottom
+- **Terminal vertical split (`vsplit`)** — new toolbar button opens the terminal on the right side of the window; content (editor/split/preview) occupies the left; clicking again closes it; if terminal is at the bottom, switches it to the right
+- **Vertical editor/preview split in vsplit mode** — when the terminal is on the right, switching to split view stacks editor on top of preview (column layout) instead of side by side, giving each pane its own vertical column of space
+- **Axis-aware resize handles** — both the terminal resize handle and the editor/preview resize handle dynamically switch between horizontal and vertical drag based on the active terminal position; no layout glitches when toggling between bottom and right
+
+### Changes
+
+- **Terminal split buttons moved to the right** — hsplit and vsplit buttons now live in their own pill group on the right side of the toolbar, visually separate from the editor/split/preview mode buttons on the left
+- **Default view mode changed to editor-only** — app now opens in editor mode instead of split view
+
+### Bug Fixes
+
+- **Sync scroll stability** — editor scroll handler now guards against zero-height edge cases and correctly targets `previewContent` instead of `previewPanel`; sync scroll is skipped in non-split modes to prevent spurious scrolling
+
+### Build
+
+- Added `highlight.js` as a dependency; bundled in production build
+
+---
+
 ## [1.5.0] — 2026-05-30
 
 ### New Features

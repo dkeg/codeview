@@ -205,6 +205,14 @@ function buildMenu() {
           click: () => mainWindow && mainWindow.webContents.send('menu-view-mode', 'split')
         },
         {
+          label: 'Toggle Terminal (Horizontal Split)',
+          click: () => mainWindow && mainWindow.webContents.send('menu-view-mode', 'hsplit')
+        },
+        {
+          label: 'Toggle Terminal (Right Side)',
+          click: () => mainWindow && mainWindow.webContents.send('menu-view-mode', 'vsplit')
+        },
+        {
           label: 'Preview Only',
           accelerator: 'Cmd+3',
           click: () => mainWindow && mainWindow.webContents.send('menu-view-mode', 'preview')

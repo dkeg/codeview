@@ -19,6 +19,7 @@ function initDomRefs() {
   window.settingsOverlay      = $('settings-overlay');
   window.sidebarResizeHandle  = $('sidebar-resize-handle');
   window.panelsResizeHandle   = $('panels-resize-handle');
+  window.workArea             = $('work-area');
   window.terminalPanel        = $('terminal-panel');
   window.terminalTabs         = $('terminal-tabs');
   window.terminalSessions     = $('terminal-sessions');
@@ -106,6 +107,9 @@ async function init() {
   try {
     // 1. DOM refs
     initDomRefs()
+    // Set editor-only as the initial panel state before anything is visible,
+    // so the preview panel is never shown in an empty/blank state on startup.
+    if (window.panels) window.panels.setAttribute('data-mode', 'editor')
 
     // 2. Global linking
     if (window.TabManager) {
@@ -333,9 +337,13 @@ window.updateSplashScreen = updateSplashScreen
 function setViewMode(mode) {
   window.viewMode = mode
   if (window.panels) window.panels.setAttribute('data-mode', mode)
+  // hsplit button active state is driven by terminal visibility, not view mode
   document.querySelectorAll('.view-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.mode === mode)
+    if (b.id !== 'btn-view-hsplit' && b.id !== 'btn-view-vsplit') b.classList.toggle('active', b.dataset.mode === mode)
   })
+  // Reset inline sizes set by resize handles
+  if (window.editorPanel)  { window.editorPanel.style.flex = ''; window.editorPanel.style.width = '' }
+  if (window.previewPanel) { window.previewPanel.style.flex = '' }
   if (window.editor) window.editor.refresh()
   window.updatePreview()
 }
@@ -353,9 +361,58 @@ function toggleSidebar() {
 window.toggleSidebar = toggleSidebar
 
 // ─── Toolbar ──────────────────────────────────────────────────────────────────
+function setTerminalPosition(pos) {
+  window.terminalPosition = pos
+  if (window.workArea) window.workArea.classList.toggle('vsplit', pos === 'right')
+  if (window.terminalPanel) {
+    if (pos === 'right') window.terminalPanel.style.height = ''
+    else window.terminalPanel.style.width = ''
+  }
+  // Clear stale inline sizes from the panels resize handle so axis switch is clean
+  if (window.editorPanel) { window.editorPanel.style.width = ''; window.editorPanel.style.height = '' }
+  if (window.previewPanel) { window.previewPanel.style.flex = '1'; window.previewPanel.style.width = ''; window.previewPanel.style.height = '' }
+  if (window.terminalVisible && window.activeTerminalId !== null) {
+    const t = window.terminals && window.terminals.get(window.activeTerminalId)
+    if (t) requestAnimationFrame(() => t.fitAddon.fit())
+  }
+  updateTerminalSplitButtons()
+}
+window.setTerminalPosition = setTerminalPosition
+
+function updateTerminalSplitButtons() {
+  const hBtn = window.$('btn-view-hsplit')
+  const vBtn = window.$('btn-view-vsplit')
+  if (hBtn) hBtn.classList.toggle('active', window.terminalVisible && window.terminalPosition !== 'right')
+  if (vBtn) vBtn.classList.toggle('active', window.terminalVisible && window.terminalPosition === 'right')
+}
+window.updateTerminalSplitButtons = updateTerminalSplitButtons
+
 function bindToolbar() {
   document.querySelectorAll('.view-btn').forEach(btn => {
-    btn.addEventListener('click', () => window.setViewMode(btn.dataset.mode))
+    btn.addEventListener('click', () => {
+      if (btn.id === 'btn-view-hsplit') {
+        if (!window.terminalVisible) {
+          setTerminalPosition('bottom')
+          window.setViewMode('editor')
+          window.openTerminal && window.openTerminal()
+        } else if (window.terminalPosition === 'right') {
+          setTerminalPosition('bottom')
+        } else {
+          window.toggleTerminal && window.toggleTerminal()
+        }
+      } else if (btn.id === 'btn-view-vsplit') {
+        if (!window.terminalVisible) {
+          setTerminalPosition('right')
+          window.openTerminal && window.openTerminal()
+        } else if (window.terminalPosition !== 'right') {
+          setTerminalPosition('right')
+        } else {
+          window.toggleTerminal && window.toggleTerminal()
+        }
+      } else {
+        window.setViewMode(btn.dataset.mode)
+      }
+    })
   })
   const syncBtn = window.$('btn-sync-scroll')
   if (syncBtn) {
@@ -493,7 +550,19 @@ function bindMenuEvents() {
     const tab = window.activeTab(); 
     if (tab && window.TabManager) window.TabManager.closeTab(tab.id) 
   })
-  window.api.on('menu-view-mode', (mode) => window.setViewMode(mode))
+  window.api.on('menu-view-mode', (mode) => {
+    if (mode === 'hsplit') {
+      if (!window.terminalVisible) { setTerminalPosition('bottom'); window.setViewMode('editor'); window.openTerminal && window.openTerminal() }
+      else if (window.terminalPosition === 'right') setTerminalPosition('bottom')
+      else window.toggleTerminal && window.toggleTerminal()
+    } else if (mode === 'vsplit') {
+      if (!window.terminalVisible) { setTerminalPosition('right'); window.openTerminal && window.openTerminal() }
+      else if (window.terminalPosition !== 'right') setTerminalPosition('right')
+      else window.toggleTerminal && window.toggleTerminal()
+    } else {
+      window.setViewMode(mode)
+    }
+  })
   window.api.on('menu-cycle-view', () => {
     const modes = ['editor', 'split', 'preview']
     const idx = modes.indexOf(window.viewMode)
@@ -565,23 +634,84 @@ function initResizeHandles() {
     })
   }
   if (window.panelsResizeHandle) {
-    makeResizable(window.panelsResizeHandle, 'col', (delta) => {
-      const totalWidth = window.panels.offsetWidth
-      const newEditorWidth = Math.max(200, Math.min(totalWidth - 200, window.editorPanel.offsetWidth + delta))
-      window.editorPanel.style.flex = 'none'
-      window.editorPanel.style.width = ((newEditorWidth / totalWidth) * 100).toFixed(2) + '%'
-      window.previewPanel.style.flex = '1'
+    let prStart = 0, prDragging = false, prIsRow = false
+    window.panelsResizeHandle.addEventListener('mousedown', (e) => {
+      e.preventDefault()
+      prDragging = true
+      prIsRow = window.terminalPosition === 'right'
+      prStart = prIsRow ? e.clientY : e.clientX
+      window.panelsResizeHandle.classList.add('dragging')
+      document.body.style.cursor = prIsRow ? 'row-resize' : 'col-resize'
+      document.body.style.userSelect = 'none'
+    })
+    document.addEventListener('mousemove', (e) => {
+      if (!prDragging) return
+      const pos = prIsRow ? e.clientY : e.clientX
+      const delta = pos - prStart
+      prStart = pos
+      if (prIsRow) {
+        const totalH = window.panels.offsetHeight
+        const newH = Math.max(100, Math.min(totalH - 100, window.editorPanel.offsetHeight + delta))
+        window.editorPanel.style.flex = 'none'
+        window.editorPanel.style.width = ''
+        window.editorPanel.style.height = ((newH / totalH) * 100).toFixed(2) + '%'
+        window.previewPanel.style.flex = '1'
+        window.previewPanel.style.height = ''
+      } else {
+        const totalW = window.panels.offsetWidth
+        const newW = Math.max(200, Math.min(totalW - 200, window.editorPanel.offsetWidth + delta))
+        window.editorPanel.style.flex = 'none'
+        window.editorPanel.style.height = ''
+        window.editorPanel.style.width = ((newW / totalW) * 100).toFixed(2) + '%'
+        window.previewPanel.style.flex = '1'
+        window.previewPanel.style.width = ''
+      }
+      if (window.editor) window.editor.refresh()
+    })
+    document.addEventListener('mouseup', () => {
+      if (!prDragging) return
+      prDragging = false
+      window.panelsResizeHandle.classList.remove('dragging')
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
       if (window.editor) window.editor.refresh()
     })
   }
   if (window.terminalResizeHandle) {
-    makeResizable(window.terminalResizeHandle, 'row', (delta) => {
-      const newHeight = Math.max(80, Math.min(window.innerHeight * 0.8, window.terminalPanel.offsetHeight - delta))
-      window.terminalPanel.style.height = newHeight + 'px'
+    let trStart = 0, trDragging = false, trIsRight = false
+    window.terminalResizeHandle.addEventListener('mousedown', (e) => {
+      e.preventDefault()
+      trDragging = true
+      trIsRight = window.terminalPosition === 'right'
+      trStart = trIsRight ? e.clientX : e.clientY
+      window.terminalResizeHandle.classList.add('dragging')
+      document.body.style.cursor = trIsRight ? 'col-resize' : 'row-resize'
+      document.body.style.userSelect = 'none'
+    })
+    document.addEventListener('mousemove', (e) => {
+      if (!trDragging) return
+      const pos = trIsRight ? e.clientX : e.clientY
+      const delta = pos - trStart
+      trStart = pos
+      if (trIsRight) {
+        const newWidth = Math.max(80, Math.min(window.innerWidth * 0.8, window.terminalPanel.offsetWidth - delta))
+        window.terminalPanel.style.width = newWidth + 'px'
+      } else {
+        const newHeight = Math.max(80, Math.min(window.innerHeight * 0.8, window.terminalPanel.offsetHeight - delta))
+        window.terminalPanel.style.height = newHeight + 'px'
+      }
       if (window.activeTerminalId !== null) {
         const t = window.terminals.get(window.activeTerminalId)
         if (t) t.fitAddon.fit()
       }
+    })
+    document.addEventListener('mouseup', () => {
+      if (!trDragging) return
+      trDragging = false
+      window.terminalResizeHandle.classList.remove('dragging')
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+      if (window.editor) window.editor.refresh()
     })
   }
 }

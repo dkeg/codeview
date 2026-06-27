@@ -127,6 +127,7 @@ window.openTerminal = async function(cwd, startMaximized = false) {
     if (tbtn) tbtn.classList.add('active')
     const abtn = document.getElementById('act-terminal')
     if (abtn) abtn.classList.add('active')
+    if (window.updateTerminalSplitButtons) window.updateTerminalSplitButtons()
     window.updateSplashScreen()
   }
 
@@ -327,6 +328,7 @@ window.hideTerminal = function() {
   if (tbtn) tbtn.classList.remove('active')
   const abtn = document.getElementById('act-terminal')
   if (abtn) abtn.classList.remove('active')
+  if (window.updateTerminalSplitButtons) window.updateTerminalSplitButtons()
   window.updateMaximizeIcon()
   window.updateCollapseIcon()
   if (window.editor) window.editor.refresh()

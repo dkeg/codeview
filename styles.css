@@ -651,6 +651,15 @@ select { cursor: pointer; }
   line-height: 1;
 }
 
+#terminal-split-buttons {
+  display: flex;
+  gap: 1px;
+  background: rgba(128, 128, 128, 0.12);
+  border-radius: 8px;
+  padding: 2px;
+  margin-right: 2px;
+}
+
 #toolbar-right {
   display: flex;
   align-items: center;
@@ -671,6 +680,43 @@ select { cursor: pointer; }
 .icon-btn:hover { opacity: 1; background: var(--icon-btn-hover); }
 .icon-btn.active { opacity: 1; color: var(--accent); background: var(--view-btn-active); }
 
+/* ─── Work Area (panels + terminal, can flex column or row) ─────────── */
+#work-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+
+/* vsplit: content left, terminal right */
+#work-area.vsplit {
+  flex-direction: row;
+}
+#work-area.vsplit #terminal-panel {
+  height: auto !important;
+  max-height: none !important;
+  width: 35%;
+  min-width: 80px;
+  border-top: none;
+  border-left: 1px solid var(--sidebar-border);
+}
+#work-area.vsplit #terminal-resize-handle {
+  height: auto !important;
+  width: 5px;
+  cursor: col-resize;
+}
+/* In vsplit, editor/preview stack vertically inside the left content area */
+#work-area.vsplit #panels {
+  flex-direction: column;
+}
+#work-area.vsplit #panels-resize-handle {
+  width: auto !important;
+  height: 5px;
+  cursor: row-resize;
+}
+
 /* ─── Panels ─────────────────────────────────────────────────────────── */
 #panels {
   flex: 1;
@@ -684,6 +730,7 @@ select { cursor: pointer; }
   flex: 1;
   overflow: hidden;
   min-width: 0;
+  min-height: 0;
 }
 
 /* ─── CodeMirror Editor ──────────────────────────────────────────────── */
@@ -794,6 +841,39 @@ select { cursor: pointer; }
   margin: 1.2em 0;
 }
 #preview-content pre code { background: none; padding: 0; font-size: 0.875em; color: var(--preview-text); border-radius: 0; }
+
+/* ─── Highlight.js tokens ────────────────────────────────────────────── */
+#preview-content .hljs-keyword,
+#preview-content .hljs-selector-tag,
+#preview-content .hljs-built_in,
+#preview-content .hljs-name,
+#preview-content .hljs-tag { color: var(--md-keyword); }
+#preview-content .hljs-string,
+#preview-content .hljs-title,
+#preview-content .hljs-section,
+#preview-content .hljs-attribute,
+#preview-content .hljs-literal,
+#preview-content .hljs-template-tag,
+#preview-content .hljs-template-variable,
+#preview-content .hljs-type,
+#preview-content .hljs-addition { color: var(--md-link); }
+#preview-content .hljs-deletion,
+#preview-content .hljs-selector-attr,
+#preview-content .hljs-selector-pseudo,
+#preview-content .hljs-meta { color: var(--md-code); }
+#preview-content .hljs-doctag,
+#preview-content .hljs-attr { color: var(--md-heading); }
+#preview-content .hljs-symbol,
+#preview-content .hljs-bullet,
+#preview-content .hljs-link,
+#preview-content .hljs-number,
+#preview-content .hljs-regexp,
+#preview-content .hljs-selector-id { color: var(--md-em); }
+#preview-content .hljs-comment,
+#preview-content .hljs-quote { color: var(--md-quote); font-style: italic; }
+#preview-content .hljs-emphasis { font-style: italic; }
+#preview-content .hljs-strong { font-weight: bold; }
+#preview-content .hljs-punctuation { opacity: 0.6; }
 #preview-content blockquote {
   margin: 1em 0;
   padding: 0.5em 1em;
@@ -849,6 +929,7 @@ select { cursor: pointer; }
 #panels[data-mode="editor"] #panels-resize-handle { display: none; }
 #panels[data-mode="preview"] #editor-panel,
 #panels[data-mode="preview"] #panels-resize-handle { display: none; }
+
 
 /* ─── Terminal Panel ─────────────────────────────────────────────────── */
 #terminal-panel {

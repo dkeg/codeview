@@ -165,6 +165,20 @@
         </div>
         <div id="toolbar-center"></div>
         <div id="toolbar-right">
+          <div id="terminal-split-buttons">
+            <button class="view-btn" id="btn-view-hsplit" data-mode="hsplit" title="Terminal Below">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+                <rect x="1.5" y="1.5" width="13" height="5.25" rx="1"/>
+                <rect x="1.5" y="9.25" width="13" height="5.25" rx="1"/>
+              </svg>
+            </button>
+            <button class="view-btn" id="btn-view-vsplit" data-mode="vsplit" title="Terminal Right">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+                <rect x="1.5" y="1.5" width="5.25" height="13" rx="1"/>
+                <rect x="9.25" y="1.5" width="5.25" height="13" rx="1"/>
+              </svg>
+            </button>
+          </div>
           <button class="icon-btn toggle-btn" id="btn-sync-scroll" title="Sync Scroll">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
               <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.5a5.5 5.5 0 110 11 5.5 5.5 0 010-11zm.75 2.75v3.56l2.47 2.47-1.06 1.06-2.75-2.75A.75.75 0 017.25 9V5.25h1.5z"/>
@@ -178,6 +192,8 @@
         </div>
       </div>
 
+      <!-- Work area: editor/preview panels + terminal (can flex column or row) -->
+      <div id="work-area">
       <!-- Editor + Preview panels -->
       <div id="panels">
         <div id="editor-panel">
@@ -517,6 +533,7 @@
         </div>
       </div>
 
+      </div><!-- end #work-area -->
     </div>
   </div>
 
@@ -539,6 +556,7 @@
 
   <!-- CodeMirror core -->
   <script src="node_modules/codemirror/lib/codemirror.js"></script>
+  <script src="node_modules/codemirror/mode/meta.js"></script>
   <!-- CodeMirror modes -->
   <script src="node_modules/codemirror/mode/markdown/markdown.js"></script>
   <script src="node_modules/codemirror/mode/javascript/javascript.js"></script>
@@ -548,6 +566,13 @@
   <script src="node_modules/codemirror/mode/python/python.js"></script>
   <script src="node_modules/codemirror/mode/yaml/yaml.js"></script>
   <script src="node_modules/codemirror/mode/shell/shell.js"></script>
+  <script src="node_modules/codemirror/mode/go/go.js"></script>
+  <script src="node_modules/codemirror/mode/rust/rust.js"></script>
+  <script src="node_modules/codemirror/mode/clike/clike.js"></script>
+  <script src="node_modules/codemirror/mode/sql/sql.js"></script>
+  <script src="node_modules/codemirror/mode/swift/swift.js"></script>
+  <script src="node_modules/codemirror/mode/dockerfile/dockerfile.js"></script>
+  <script src="node_modules/codemirror/mode/toml/toml.js"></script>
   <!-- CodeMirror addons -->
   <script src="node_modules/codemirror/addon/edit/closebrackets.js"></script>
   <script src="node_modules/codemirror/addon/edit/matchbrackets.js"></script>
