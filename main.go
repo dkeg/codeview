@@ -120,8 +120,9 @@ func openExternalFile(path string) {
 	}
 }
 
-// localImageMiddleware serves images next to the open document so relative
-// <img src> in the markdown preview works: /_localfile/<absolute path>.
+// localImageMiddleware serves files next to the open document so relative
+// <img src> in markdown previews and CSS/JS/images in HTML previews work:
+// /_localfile/<absolute path>. Limited to web asset types.
 func localImageMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		p, ok := strings.CutPrefix(r.URL.Path, "/_localfile")
@@ -130,7 +131,9 @@ func localImageMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		switch strings.ToLower(filepath.Ext(p)) {
-		case ".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".avif", ".bmp", ".ico":
+		case ".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".avif", ".bmp", ".ico",
+			".css", ".js", ".mjs", ".json", ".woff", ".woff2", ".ttf", ".otf",
+			".mp4", ".webm", ".mp3", ".wav", ".ogg":
 			http.ServeFile(w, r, filepath.Clean(p))
 		default:
 			http.Error(w, "forbidden", http.StatusForbidden)

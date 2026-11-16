@@ -15,8 +15,10 @@ window.PreviewManager = {
 
       let content = tab.content
       if (tab.filePath) {
-        const dir = tab.filePath.split('/').slice(0, -1).join('/') + '/'
-        const baseTag = `<base href="file://${dir}">`
+        // Relative CSS/JS/images resolve through the backend's /_localfile route
+        // (WKWebView can't load file:// from the app origin).
+        const dir = tab.filePath.split('/').slice(0, -1).map(encodeURIComponent).join('/') + '/'
+        const baseTag = `<base href="${location.origin}/_localfile${dir}">`
         if (content.includes('<head>')) {
           content = content.replace('<head>', '<head>' + baseTag)
         } else if (content.includes('<html>')) {
@@ -26,7 +28,7 @@ window.PreviewManager = {
         }
       }
 
-      // Blob URLs are same-origin and always work in Electron
+      // Blob URLs are same-origin with the app
       if (window.htmlPreview._blobUrl) URL.revokeObjectURL(window.htmlPreview._blobUrl)
       const blob = new Blob([content], { type: 'text/html; charset=utf-8' })
       window.htmlPreview._blobUrl = URL.createObjectURL(blob)
