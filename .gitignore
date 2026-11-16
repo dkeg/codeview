@@ -11,5 +11,5 @@ dist/
 # IDE / editor
 .claude/
 
-# Electron builder cache
+# Build cache
 .cache/

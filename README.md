@@ -2,8 +2,6 @@
 
 A native macOS code and markdown editor built with Go and [Wails](https://wails.io). Designed for developers — integrated terminal, syntax highlighting for 10+ languages, live preview, and a clean native macOS interface.
 
-![CodeView](assets/codeview.png)
-
 ## Screenshots
 
 | Splash Screen | Editor & Preview |
@@ -135,6 +133,7 @@ Open with `Cmd+,` or via the settings icon. Press `Escape` or click outside to c
 
 ```bash
 brew tap dkeg/codeview
+brew trust --cask dkeg/codeview/codeview   # Homebrew 7+ asks you to trust third-party taps
 brew install --cask codeview
 ```
 
