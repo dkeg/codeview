@@ -25,7 +25,8 @@ CodeView now runs on **Go + Wails v3** instead of Electron. The UI is unchanged;
 - **Detached HEAD** — shows the short commit instead of an empty branch
 - **Closing the last tab** — threw on a missing toolbar element and left the UI in a half-closed state
 - **Terminal unicode** — multi-byte characters split across PTY reads are no longer mangled
-- **Traffic lights** — toolbar controls now keep clear of the window buttons on every macOS version
+- **Traffic lights** — centred on the toolbar, with toolbar controls kept clear of them on every macOS version
+- **Sidebar vibrancy** — the sidebar shows the translucent macOS sidebar material (the webview is made transparent natively)
 - **Saving keeps file permissions** — e.g. executable shell scripts stay executable
 
 ### Build

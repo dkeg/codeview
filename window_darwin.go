@@ -4,8 +4,28 @@ package main
 
 /*
 #cgo CFLAGS: -x objective-c -fobjc-arc
-#cgo LDFLAGS: -framework Cocoa
+#cgo LDFLAGS: -framework Cocoa -framework WebKit
 #import <Cocoa/Cocoa.h>
+#import <WebKit/WebKit.h>
+
+// Wails' webview transparency doesn't take on recent macOS (the WKWebView
+// keeps drawing an opaque white background), so the sidebar showed white
+// instead of the vibrancy behind it. Re-apply it, and give the effect view
+// the Sidebar material Electron used (vibrancy: 'sidebar').
+static void cvApplyVibrancy(NSWindow *w) {
+	for (NSView *v in w.contentView.subviews) {
+		if ([v isKindOfClass:[NSVisualEffectView class]]) {
+			NSVisualEffectView *e = (NSVisualEffectView *)v;
+			e.material = NSVisualEffectMaterialSidebar;
+			e.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+			e.state = NSVisualEffectStateFollowsWindowActiveState;
+		} else if ([v isKindOfClass:[WKWebView class]]) {
+			WKWebView *wv = (WKWebView *)v;
+			@try { [wv setValue:@NO forKey:@"drawsBackground"]; } @catch (id ex) {}
+			if (@available(macOS 12.0, *)) wv.underPageBackgroundColor = [NSColor clearColor];
+		}
+	}
+}
 
 // Port of Electron's trafficLightPosition: inset the window buttons from the
 // left edge and centre them on the toolbar. The toolbar's centre line is
@@ -71,6 +91,7 @@ static double cvTrafficLightsRightEdge(void *win) {
 static void cvInstallTrafficLights(void *win) {
 	NSWindow *w = (__bridge NSWindow *)win;
 	if (!w) return;
+	cvApplyVibrancy(w);
 	cvLayout(w);
 	__weak NSWindow *weakW = w;
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
