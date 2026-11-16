@@ -6,7 +6,7 @@
 #   ./scripts/build-mac.sh --sign --notarize   sign, notarize and staple
 #
 # Notarization credentials: NOTARY_PROFILE (a `xcrun notarytool store-credentials`
-# profile, default "codeview"), or APPLE_ID + APPLE_APP_SPECIFIC_PASSWORD + APPLE_TEAM_ID.
+# profile, default "markview-notary"), or APPLE_ID + APPLE_APP_SPECIFIC_PASSWORD + APPLE_TEAM_ID.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -33,7 +33,7 @@ notarize() {
   if [ -n "${APPLE_ID:-}" ]; then
     xcrun notarytool submit "$1" --apple-id "$APPLE_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD" --team-id "$TEAM_ID" --wait
   else
-    xcrun notarytool submit "$1" --keychain-profile "${NOTARY_PROFILE:-codeview}" --wait
+    xcrun notarytool submit "$1" --keychain-profile "${NOTARY_PROFILE:-markview-notary}" --wait
   fi
 }
 
