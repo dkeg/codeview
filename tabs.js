@@ -34,14 +34,31 @@ window.TabManager = {
     window.saveSessionDebounced()
   },
 
-  closeTab(id) {
+  async closeTab(id) {
     const tab = this.tabs.find(t => t.id === id)
     if (!tab) return
 
     if (tab.modified) {
-      if (!confirm(`Save changes to "${tab.name}" before closing?`)) return
-      if (tab.filePath) window.api.writeFile(tab.filePath, tab.content)
+      // Native Save / Don't Save / Cancel sheet (WKWebView has no window.confirm)
+      const choice = await window.api.askSaveChanges(tab.name)
+      if (choice === 'cancel') return
+      if (choice === 'save') {
+        if (tab.filePath) {
+          const result = await window.api.writeFile(tab.filePath, tab.content)
+          if (!result || !result.success) {
+            window.api.showMessage('Save failed: ' + ((result && result.error) || 'unknown error'))
+            return
+          }
+        } else {
+          // Untitled: switch to it and run Save As; keep it open if cancelled.
+          this.switchTab(tab.id)
+          await window.saveAsCurrentTab()
+          if (tab.modified) return
+        }
+        if (window.GitManager) window.GitManager.refreshAll()
+      }
     }
+    if (!this.tabs.includes(tab)) return
 
     const idx = this.tabs.indexOf(tab)
     this.tabs.splice(idx, 1)
@@ -53,8 +70,10 @@ window.TabManager = {
         window.loadTabIntoEditor(next)
       } else {
         if (window.editor) window.editor.setValue('')
-        document.getElementById('file-name-display').textContent = ''
-        document.getElementById('modified-indicator').style.display = 'none'
+        const nameEl = document.getElementById('file-name-display')
+        if (nameEl) nameEl.textContent = ''
+        const modEl = document.getElementById('modified-indicator')
+        if (modEl) modEl.style.display = 'none'
         window.updatePreview()
       }
     }

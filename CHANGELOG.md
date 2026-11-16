@@ -4,6 +4,37 @@ All notable changes to CodeView will be documented here.
 
 ---
 
+## [2.0.0] — 2026-11-15
+
+CodeView now runs on **Go + Wails v3** instead of Electron. The UI is unchanged; the app is ~20 MB instead of ~150 MB, starts faster and uses the system WebKit.
+
+### New Features
+
+- **Source Control panel** — the Git sidebar panel (previously an empty placeholder) now lists each open folder's branch, ahead/behind counts and changed files; click a file to open it
+- **Pull requests** — open PRs for the repository plus the PR for the current branch, with draft / review / CI check badges, via the GitHub CLI; click to open on GitHub
+- **Branch indicator** — the toolbar branch pill now actually renders, with ↑/↓ upstream counts
+- **Save / Don't Save / Cancel** — closing a modified tab shows a native sheet with a real "Don't Save" option; untitled tabs go through Save As
+- **Relative images in markdown preview** — `![](assets/shot.png)` now resolves next to the open file
+- **Intel support in Homebrew** — the cask now installs on both Apple Silicon and Intel
+
+### Bug Fixes
+
+- **Git status in subfolders** — status was matched against repo-root paths, so opening a subfolder of a repo showed no decorations
+- **Git status for unusual filenames** — paths with spaces or non-ASCII characters were quoted by git and never matched
+- **Collapsed folders** — directories now show when they contain changes; conflicts and deletions are decorated
+- **Detached HEAD** — shows the short commit instead of an empty branch
+- **Closing the last tab** — threw on a missing toolbar element and left the UI in a half-closed state
+- **Terminal unicode** — multi-byte characters split across PTY reads are no longer mangled
+- **Traffic lights** — toolbar controls now keep clear of the window buttons on every macOS version
+- **Saving keeps file permissions** — e.g. executable shell scripts stay executable
+
+### Build
+
+- Electron, node-pty and electron-builder removed; `scripts/build-mac.sh` builds, signs, notarizes and packages arm64 + Intel DMGs
+- Requires macOS 13 (Ventura) or later
+
+---
+
 ## [1.6.0] — 2026-06-27
 
 ### New Features

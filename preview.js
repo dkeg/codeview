@@ -49,8 +49,21 @@ window.PreviewManager = {
 
     window.previewContent.className = ''
     window.previewContent.innerHTML = window.api.renderMarkdown(tab.content)
+    window.PreviewManager.resolveLocalImages(tab.filePath)
     window.previewContent.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.disabled = true })
     window.PreviewManager.renderMermaid()
+  },
+
+  // Point relative <img> paths at the backend's local-file route.
+  resolveLocalImages(filePath) {
+    if (!filePath) return
+    const baseDir = filePath.slice(0, filePath.lastIndexOf('/') + 1)
+    window.previewContent.querySelectorAll('img[src]').forEach(img => {
+      const src = img.getAttribute('src')
+      if (!src || /^(?:[a-z][a-z0-9+.-]*:|\/\/|#)/i.test(src)) return // absolute URL, data:, etc.
+      const abs = decodeURIComponent(new URL(src, 'file://' + baseDir).pathname)
+      img.src = '/_localfile' + abs.split('/').map(encodeURIComponent).join('/')
+    })
   },
 
   renderMermaid() {

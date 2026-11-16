@@ -225,6 +225,7 @@ async function saveCurrentTab() {
     tab.modified = false
     window.renderTabs()
     window.updateToolbarTitle()
+    if (window.GitManager) window.GitManager.refreshAll()
   } else {
     alert('Save failed: ' + result.error)
   }
@@ -247,6 +248,7 @@ async function saveAsCurrentTab() {
     window.updateToolbarTitle()
     window.updatePreview()
     window.addToRecents(filePath)
+    if (window.GitManager) window.GitManager.refreshAll()
   }
 }
 window.saveAsCurrentTab = saveAsCurrentTab
@@ -280,6 +282,7 @@ window.addToRecents = addToRecents
 // ─── UI state ─────────────────────────────────────────────────────────────────
 function updateToolbarTitle() {
   window.api.setTitle('CodeView')
+  if (window.GitManager) window.GitManager.updateBranchDisplay()
 }
 window.updateToolbarTitle = updateToolbarTitle
 
@@ -437,6 +440,7 @@ function setActiveActivity(name) {
     p.classList.toggle('active', p.id === 'panel-' + name)
   })
   if (name === 'home') window.updateHomeSection()
+  if (name === 'git' && window.GitManager) window.GitManager.onPanelShown()
 }
 window.setActiveActivity = setActiveActivity
 
@@ -579,6 +583,10 @@ function bindMenuEvents() {
     }
   })
   window.api.on('open-external-file', (filePath) => window.openFile(filePath))
+  window.api.on('menu-show-git', () => {
+    if (!window.sidebarVisible && window.toggleSidebar) window.toggleSidebar()
+    window.setActiveActivity('git')
+  })
 }
 window.bindMenuEvents = bindMenuEvents
 

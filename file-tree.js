@@ -70,7 +70,8 @@ window.FileTree = {
     try { entries = await window.api.readDir(dirPath) } catch { return }
 
     // Fetch git status for the folder if we're at depth 0
-    if (depth === 0) {
+    // (refreshAll() keeps the cache current; only fetch on first render)
+    if (depth === 0 && !window.GitManager.statusCache.has(folder.path)) {
       await window.GitManager.getStatus(folder.path)
     }
 
@@ -78,11 +79,14 @@ window.FileTree = {
       const item = document.createElement('div')
       const relativePath = entry.path.replace(folder.path + '/', '')
       const gitStatus = window.GitManager.getFileStatus(folder.path, relativePath)
-      
+
       let gitClass = ''
-      if (gitStatus === 'M') gitClass = ' git-modified'
-      if (gitStatus === '??' || gitStatus === '?') gitClass = ' git-untracked'
-      if (gitStatus === 'A') gitClass = ' git-added'
+      if (gitStatus) {
+        if (gitStatus.includes('U')) gitClass = ' git-conflict'
+        else if (gitStatus.includes('?')) gitClass = ' git-untracked'
+        else if (gitStatus.includes('M')) gitClass = ' git-modified'
+        else if (gitStatus.includes('A') || gitStatus.includes('R')) gitClass = ' git-added'
+      }
 
       item.className = 'tree-item' + (entry.isDirectory ? ' directory' : '') + gitClass
       item.style.paddingLeft = (6 + depth * 14) + 'px'

@@ -121,7 +121,12 @@
       <!-- Git Panel -->
       <div class="sidebar-panel" id="panel-git">
         <div class="panel-header">
-          <span class="panel-title">GIT</span>
+          <span class="panel-title">SOURCE CONTROL</span>
+          <div class="panel-actions">
+          <button class="icon-btn" id="git-refresh" title="Refresh">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2.5a5.487 5.487 0 00-4.131 1.869l1.204 1.204A.25.25 0 014.896 6H1.25A.25.25 0 011 5.75V2.104a.25.25 0 01.427-.177l1.38 1.38A7.001 7.001 0 0114.95 7.16a.75.75 0 11-1.49.178A5.501 5.501 0 008 2.5zM1.705 8.005a.75.75 0 01.834.656 5.501 5.501 0 009.592 2.97l-1.204-1.204a.25.25 0 01.177-.427h3.646a.25.25 0 01.25.25v3.646a.25.25 0 01-.427.177l-1.38-1.38A7.001 7.001 0 011.05 8.84a.75.75 0 01.656-.834z"/></svg>
+          </button>
+          </div>
         </div>
         <div class="panel-body">
           <div id="git-panel-content">
@@ -163,7 +168,12 @@
             </svg>
           </button>
         </div>
-        <div id="toolbar-center"></div>
+        <div id="toolbar-center">
+          <div id="git-branch-display" style="display:none" title="Current branch">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V5A2.5 2.5 0 0110 7.5H6a1 1 0 00-1 1v1.128a2.251 2.251 0 11-1.5 0V5.372a2.25 2.25 0 111.5 0v1.836A2.493 2.493 0 016 7h4a1 1 0 001-1v-.628A2.25 2.25 0 019.5 3.25zM4.25 12a.75.75 0 100 1.5.75.75 0 000-1.5zM3.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0z"/></svg>
+            <span id="git-branch-name"></span><span id="git-branch-sync"></span>
+          </div>
+        </div>
         <div id="toolbar-right">
           <div id="terminal-split-buttons">
             <button class="view-btn" id="btn-view-hsplit" data-mode="hsplit" title="Terminal Below">
@@ -582,6 +592,11 @@
   <script src="node_modules/@xterm/addon-web-links/lib/addon-web-links.js"></script>
   <script src="node_modules/@xterm/addon-unicode11/lib/addon-unicode11.js"></script>
   <script src="node_modules/mermaid/dist/mermaid.min.js"></script>
+  <!-- Markdown rendering (formerly loaded in the Electron preload) -->
+  <script src="node_modules/marked/marked.min.js"></script>
+  <script src="node_modules/@highlightjs/cdn-assets/highlight.min.js"></script>
+  <!-- Wails bridge: defines window.api -->
+  <script src="bridge.js"></script>
   <script src="globals.js"></script>
   <script src="icons.js"></script>
   <script src="terminal.js"></script>

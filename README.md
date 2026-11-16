@@ -1,6 +1,8 @@
 # CodeView
 
-A native macOS code and markdown editor built with Electron. Designed for developers — integrated terminal, syntax highlighting for 10+ languages, live preview, and a clean native macOS interface.
+A native macOS code and markdown editor built with Go and [Wails](https://wails.io). Designed for developers — integrated terminal, syntax highlighting for 10+ languages, live preview, and a clean native macOS interface.
+
+![CodeView](assets/codeview.png)
 
 ## Screenshots
 
@@ -77,9 +79,11 @@ A full PTY-backed zsh terminal lives inside the window with flexible split layou
 
 ## Git Integration
 
-- **Branch indicator** — current branch name shown in the center of the toolbar
-- **File status** — modified files show an orange **M**, untracked files show a green **??** in the sidebar tree
-- **Auto-refresh** — status updates when the window regains focus
+- **Branch indicator** — current branch in the center of the toolbar, with ↑ahead / ↓behind counts against its upstream (follows the folder of the active tab)
+- **File status** — modified, added, untracked and conflicted files are colored in the sidebar tree; folders take the color of the changes inside them, so changes in collapsed folders stay visible. Works when the opened folder is a subfolder of a repository
+- **Source Control panel** (`Cmd+Shift+G`) — every open folder's branch and changed files (staged changes underlined); click a file to open it
+- **Pull requests** — open PRs for the repository, plus the PR for the checked-out branch with review and CI check status; click to open on GitHub. Requires the [GitHub CLI](https://cli.github.com) (`brew install gh` + `gh auth login`)
+- **Auto-refresh** — status updates when the window regains focus and after saving
 
 ---
 
@@ -134,23 +138,27 @@ brew tap dkeg/codeview
 brew install --cask codeview
 ```
 
+Requires macOS 13 (Ventura) or later.
+
 ### From Source
+
+Requires Go 1.26+, Xcode Command Line Tools and Node.js (npm only supplies the frontend libraries; there is no Node runtime in the app).
 
 ```bash
 git clone https://github.com/dkeg/codeview.git
 cd codeview
-npm install
-npm run rebuild
-npm start
+npm ci
+go run -tags devtools .
 ```
 
 ### Build as macOS App
 
 ```bash
-npm run build
+./scripts/build-mac.sh                    # unsigned, arm64 + Intel
+./scripts/build-mac.sh --sign --notarize  # Developer ID signed + notarized
 ```
 
-The built `.app` will be in `dist/mac-arm64/` (Apple Silicon) or `dist/mac/` (Intel).
+The DMGs and staged `CodeView.app` bundles are written to `dist/`.
 
 ---
 
@@ -169,6 +177,7 @@ The built `.app` will be in `dist/mac-arm64/` (Apple Silicon) or `dist/mac/` (In
 | `Cmd+3` | Preview only |
 | `Cmd+Shift+P` | Cycle view modes |
 | `Cmd+B` | Toggle sidebar |
+| `Cmd+Shift+G` | Source Control panel |
 | `Cmd+Shift+T` | Toggle table of contents |
 | `` Cmd+` `` | Toggle terminal |
 | `Cmd+,` | Toggle settings |
@@ -178,12 +187,13 @@ The built `.app` will be in `dist/mac-arm64/` (Apple Silicon) or `dist/mac/` (In
 
 ## Tech Stack
 
-- [Electron](https://www.electronjs.org/) — desktop app framework
+- [Go](https://go.dev) + [Wails v3](https://v3.wails.io) — native macOS shell (WKWebView), menus, dialogs
+- [creack/pty](https://github.com/creack/pty) — PTY for the integrated terminal
 - [CodeMirror 5](https://codemirror.net/5/) — syntax-highlighted editor
 - [xterm.js](https://xtermjs.org/) — terminal emulator
-- [node-pty](https://github.com/microsoft/node-pty) — native PTY bindings
 - [marked](https://marked.js.org/) — Markdown parser and renderer
 - [highlight.js](https://highlightjs.org/) — Syntax highlighting for code blocks in preview
+- [GitHub CLI](https://cli.github.com) — pull request data (optional)
 - [Mermaid](https://mermaid.js.org/) — Diagram and chart rendering
 
 ---

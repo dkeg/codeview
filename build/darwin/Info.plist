@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key><string>CodeView</string>
+	<key>CFBundleDisplayName</key><string>CodeView</string>
+	<key>CFBundleExecutable</key><string>CodeView</string>
+	<key>CFBundleIdentifier</key><string>com.codeview.app</string>
+	<key>CFBundleIconFile</key><string>icon</string>
+	<key>CFBundlePackageType</key><string>APPL</string>
+	<key>CFBundleShortVersionString</key><string>__VERSION__</string>
+	<key>CFBundleVersion</key><string>__VERSION__</string>
+	<key>LSMinimumSystemVersion</key><string>13.0</string>
+	<key>LSApplicationCategoryType</key><string>public.app-category.developer-tools</string>
+	<key>NSHighResolutionCapable</key><true/>
+	<key>NSRequiresAquaSystemAppearance</key><false/>
+	<key>NSHumanReadableCopyright</key><string>© dkeg — MIT License</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key><string>Markdown File</string>
+			<key>CFBundleTypeRole</key><string>Editor</string>
+			<key>LSHandlerRank</key><string>Alternate</string>
+			<key>CFBundleTypeExtensions</key>
+			<array><string>md</string><string>markdown</string></array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key><string>JSON File</string>
+			<key>CFBundleTypeRole</key><string>Editor</string>
+			<key>LSHandlerRank</key><string>Alternate</string>
+			<key>CFBundleTypeExtensions</key>
+			<array><string>json</string></array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key><string>HTML File</string>
+			<key>CFBundleTypeRole</key><string>Editor</string>
+			<key>LSHandlerRank</key><string>Alternate</string>
+			<key>CFBundleTypeExtensions</key>
+			<array><string>html</string><string>htm</string></array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key><string>JavaScript File</string>
+			<key>CFBundleTypeRole</key><string>Editor</string>
+			<key>LSHandlerRank</key><string>Alternate</string>
+			<key>CFBundleTypeExtensions</key>
+			<array><string>js</string><string>mjs</string><string>cjs</string></array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key><string>TypeScript File</string>
+			<key>CFBundleTypeRole</key><string>Editor</string>
+			<key>LSHandlerRank</key><string>Alternate</string>
+			<key>CFBundleTypeExtensions</key>
+			<array><string>ts</string><string>tsx</string></array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key><string>Python File</string>
+			<key>CFBundleTypeRole</key><string>Editor</string>
+			<key>LSHandlerRank</key><string>Alternate</string>
+			<key>CFBundleTypeExtensions</key>
+			<array><string>py</string></array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key><string>YAML File</string>
+			<key>CFBundleTypeRole</key><string>Editor</string>
+			<key>LSHandlerRank</key><string>Alternate</string>
+			<key>CFBundleTypeExtensions</key>
+			<array><string>yaml</string><string>yml</string></array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key><string>Shell Script</string>
+			<key>CFBundleTypeRole</key><string>Editor</string>
+			<key>LSHandlerRank</key><string>Alternate</string>
+			<key>CFBundleTypeExtensions</key>
+			<array><string>sh</string><string>bash</string><string>zsh</string></array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key><string>Text File</string>
+			<key>CFBundleTypeRole</key><string>Editor</string>
+			<key>LSHandlerRank</key><string>Alternate</string>
+			<key>CFBundleTypeExtensions</key>
+			<array><string>txt</string></array>
+		</dict>
+	</array>
+</dict>
+</plist>
