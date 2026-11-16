@@ -261,12 +261,19 @@ func writeJSON(path string, v any) Result {
 
 func (s *CodeView) GetTheme() string { return themeName() }
 
-// TrafficLightsInset is the x position (CSS px) where the window buttons end.
-func (s *CodeView) TrafficLightsInset() float64 {
+type TrafficLights struct {
+	CenterY   float64 `json:"centerY"`
+	RightEdge float64 `json:"rightEdge"`
+}
+
+// AlignTrafficLights centres the window buttons on the toolbar's centre line
+// (CSS px from the top of the window) and reports where they ended up.
+func (s *CodeView) AlignTrafficLights(centerY float64) TrafficLights {
 	if mainWindow == nil {
-		return 0
+		return TrafficLights{}
 	}
-	return trafficLightsRightEdge(mainWindow)
+	cy, edge := alignTrafficLights(mainWindow, centerY)
+	return TrafficLights{CenterY: cy, RightEdge: edge}
 }
 
 func (s *CodeView) GetHomeDir() string {

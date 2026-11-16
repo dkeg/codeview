@@ -79,7 +79,7 @@
     saveSession: (s) => call('SaveSession', s),
 
     getTheme: () => call('GetTheme'),
-    trafficLightsInset: () => call('TrafficLightsInset'),
+    alignTrafficLights: (centerY) => call('AlignTrafficLights', centerY),
 
     // Git & GitHub
     getGitStatus: (dir) => call('GetGitStatus', dir),
@@ -128,9 +128,18 @@
 
   window.alert = (msg) => { window.api.showMessage(msg) }
 
-  // Keep toolbar controls clear of the traffic lights.
-  const applyInset = () => window.api.trafficLightsInset().then(x => {
-    if (x > 0) document.documentElement.style.setProperty('--traffic-lights-inset', Math.ceil(x + 14) + 'px')
-  }).catch(() => {})
-  window.addEventListener('DOMContentLoaded', () => { applyInset(); setTimeout(applyInset, 1000) })
+  // Line the native traffic lights up with the toolbar icons, then keep the
+  // toolbar's controls clear of them.
+  const alignWindowButtons = () => {
+    const ref = document.getElementById('btn-sidebar-toggle') || document.getElementById('toolbar')
+    if (!ref) return
+    const r = ref.getBoundingClientRect()
+    if (!r.height) return
+    window.api.alignTrafficLights(r.top + r.height / 2).then(tl => {
+      if (tl && tl.rightEdge > 0) {
+        document.documentElement.style.setProperty('--traffic-lights-inset', Math.ceil(tl.rightEdge + 14) + 'px')
+      }
+    }).catch(() => {})
+  }
+  window.addEventListener('DOMContentLoaded', () => { alignWindowButtons(); setTimeout(alignWindowButtons, 1000) })
 })()
